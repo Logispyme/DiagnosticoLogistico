@@ -1,0 +1,928 @@
+<!DOCTYPE html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Diagnóstico de la Situación Logística | LogisPyme</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --p:#0f3750;--p2:#1d6a8f;--a:#e68a19;--bg:#f4f7f9;--c:#ffffff;
+  --t:#1e293b;--m:#64748b;--border:#e2e8f0;--ok:#16a34a;--no:#dc2626;
+  --radius:10px;--shadow:0 4px 14px -2px rgba(15,55,80,0.06);
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:'Plus Jakarta Sans',Segoe UI,sans-serif;background:var(--bg);color:var(--t);font-size:13.5px;line-height:1.5}
+header{background:var(--p);color:#fff;padding:12px 24px;display:flex;gap:14px;align-items:center;position:sticky;top:0;z-index:40;box-shadow:0 2px 8px rgba(0,0,0,0.12)}
+header h1{margin:0;font-size:15.5px;font-weight:700;letter-spacing:.3px}
+header .sp{flex:1}
+.logo-box{background:#fff;border-radius:8px;padding:5px 12px;display:inline-flex;align-items:center}
+header button,.btn{background:rgba(255,255,255,.14);color:#fff;border:1px solid rgba(255,255,255,.25);padding:8px 14px;border-radius:8px;cursor:pointer;font-size:12.5px;font-weight:600;font-family:inherit;transition:all .15s ease}
+header button:hover,.btn:hover{background:rgba(255,255,255,.25)}
+.btn{background:var(--p);border:0}
+.btn:hover{background:var(--p2)}
+.btn.sec{background:#e2e8f0;color:var(--p);border:0}
+.btn.sec:hover{background:#cbd5e1}
+.btn.ok{background:var(--ok)}
+.btn.ok:hover{background:#15803d}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+
+.wrap{display:flex;min-height:calc(100vh - 60px)}
+nav{width:260px;background:var(--c);border-right:1px solid var(--border);padding:14px 0;flex:0 0 auto}
+nav a{display:flex;justify-content:space-between;align-items:center;padding:9.5px 18px;color:var(--m);text-decoration:none;border-left:3px solid transparent;font-size:12.5px;font-weight:500;transition:all .15s ease}
+nav a:hover{background:#f8fafc;color:var(--p)}
+nav a.on{background:#f1f5f9;border-left-color:var(--a);font-weight:700;color:var(--p)}
+nav a small{background:#e2e8f0;color:var(--p);padding:2px 7px;border-radius:12px;font-size:11px;font-weight:600}
+
+main{flex:1;padding:24px;padding-bottom:80px;max-width:1150px;margin:0 auto;width:100%}
+.card{background:var(--c);border-radius:var(--radius);padding:22px 26px;margin-bottom:18px;box-shadow:var(--shadow);border:1px solid var(--border)}
+h2{margin:0 0 14px;font-size:17.5px;color:var(--p);border-bottom:1px solid var(--border);padding-bottom:10px;font-weight:700}
+h3{margin:20px 0 9px;font-size:14.5px;color:var(--p2);font-weight:700}
+label{display:block;font-size:12px;color:var(--m);margin-bottom:4px;font-weight:600}
+input,select{width:100%;padding:8.5px 11px;border:1px solid var(--border);border-radius:7px;font-size:13px;font-family:inherit;background:#fff;color:var(--t)}
+input:focus,select:focus{outline:none;border-color:var(--p2);box-shadow:0 0 0 3px rgba(29,106,143,.15)}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px}
+
+.q{border:1px solid var(--border);border-radius:var(--radius);padding:13px 15px;margin:11px 0;background:#fff;transition:all .2s ease}
+.q:hover{border-color:#cbd5e1}
+.q.miss{border:2px solid var(--no);background:#fef2f2}
+.q .t{font-weight:600;margin-bottom:9px;font-size:13.5px;color:var(--t)}
+.q .t span{background:#e0f2fe;color:var(--p2);padding:2px 7px;border-radius:5px;font-size:11.5px;margin-right:7px;font-weight:700}
+.op{display:flex;gap:11px;align-items:center;padding:8px 11px;border-radius:7px;cursor:pointer;font-size:12.8px;border:1px solid var(--border);margin-bottom:6px;background:#f8fafc;transition:all .15s ease}
+.op:hover{background:#f1f5f9;border-color:#94a3b8}
+.op input{position:absolute;opacity:0;width:0;height:0}
+.op .mk{flex:0 0 16px;width:16px;height:16px;border:2px solid #94a3b8;border-radius:50%;background:#fff}
+.op.sel{background:#eff6ff;border-color:#60a5fa;font-weight:600;color:var(--p)}
+.op.sel .mk{background:var(--p2);border-color:var(--p2);box-shadow:inset 0 0 0 3px #fff}
+
+table{width:100%;border-collapse:collapse;font-size:12.5px;margin:10px 0;background:#fff;border-radius:8px;overflow:hidden;border:1px solid var(--border)}
+th,td{border:1px solid var(--border);padding:8px 11px;text-align:left;vertical-align:top}
+th{background:#f8fafc;color:var(--p);font-size:11.8px;font-weight:700}
+td ul{margin:3px 0;padding-left:17px}
+td li{margin:3px 0;line-height:1.4}
+
+.kpi{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:11px;margin:11px 0}
+.kpi div{background:#f8fafc;border:1px solid var(--border);border-radius:var(--radius);padding:10px 12px}
+.kpi b{display:block;font-size:20px;color:var(--p);font-weight:700}
+.hint{background:#f8fafc;border-left:4px solid var(--p2);padding:10px 13px;border-radius:6px;font-size:12.5px;margin:10px 0}
+.hint.warn{border-left-color:var(--no);background:#fef2f2;color:#991b1b}
+.hint.good{border-left-color:var(--ok);background:#f0fdf4;color:#166534}
+.tag{display:inline-block;padding:2px 9px;border-radius:20px;font-size:11px;font-weight:700;color:#fff}
+.bar{position:fixed;left:0;bottom:0;width:100%;background:rgba(255,255,255,.95);backdrop-filter:blur(6px);border-top:1px solid var(--border);padding:9px 24px;font-size:12.5px;color:var(--m);display:flex;gap:14px;z-index:30}
+.bar b{color:var(--p)}
+.bar .sp{flex:1}
+.b{height:8px;background:#e2e8f0;border-radius:5px;overflow:hidden;min-width:70px}
+.b div{height:100%;border-radius:5px}
+
+@media(max-width:960px){.wrap{flex-direction:column}nav{width:100%}}
+@media print{header,nav,.bar,.btn,.noprint{display:none!important}main{padding:0;max-width:100%}.card{box-shadow:none;border:0;padding:0}}
+</style></head><body>
+<header>
+<div class="logo-box">
+<svg width="125" height="28" viewBox="0 0 264 60" xmlns="http://www.w3.org/2000/svg">
+<text x="0" y="34" font-family="'Plus Jakarta Sans',sans-serif" font-size="30" font-weight="700" fill="#0b6ba8">logispyme</text>
+<path d="M2 46h182" stroke="#e68a19" stroke-width="3"/><text x="2" y="57" font-family="'Plus Jakarta Sans',sans-serif" font-size="9" fill="#5d6d79">gestión logística en la empresa</text>
+</svg>
+</div>
+<h1>DIAGNÓSTICO DE LA SITUACIÓN LOGÍSTICA</h1>
+<span class="sp"></span>
+<button data-go="descargarHtml" style="background:#e68a19;border-color:#e68a19">📥 Descargar esta App</button>
+<button data-go="bd">Base de datos</button>
+</header>
+
+<div class="wrap"><nav id="nav"></nav><main id="main"></main></div>
+<div class="bar"><span>Progreso: <b id="pr"></b></span><span class="sp"></span><span id="st"></span></div>
+
+<script>
+var B={
+  "M":[
+    {"id":"1","nombre":"Estrategia","max":100,"dims":[
+      {"id":"1a","nombre":"Organización y recursos humanos del área logística","max":22.73,"preguntas":[
+        {"id":"1a.1","texto":"¿Existe un departamento de logística en la empresa?","ops":["No.","Sí, encargado de las tareas de almacén y transporte.","Sí, encargado de las tareas de gestión de stocks, almacén y transporte.","Sí, encargado de la logística integral (compras, stocks, almacén y transporte).","Existe un departamento de gestión de la cadena de suministro."],"mejora":"Debe mejorar la organización de su área logística de cara a optimizar costes y el servicio al cliente.","pts":[0,1.14,2.27,3.41,4.55]},
+        {"id":"1a.2","texto":"¿La empresa tiene definidas las competencias de todos los integrantes del área logística?","ops":["No.","Solo se encuentran definidas las tareas básicas del personal operativo.","Se encuentran definidas las tareas básicas del personal operativo y mandos intermedios.","De todo el personal operativo y de aprovisionamiento.","Se encuentran definidas las competencias de todo el personal del área."],"mejora":"Para un correcto funcionamiento de los recursos humanos, debe definir competencias para todo el personal del área.","pts":[0,1.14,2.27,3.41,4.55]},
+        {"id":"1a.3","texto":"¿Se realizan procesos de selección adecuados para garantizar el nivel de cualificación del personal?","ops":["No.","Solo con el equipo responsable del área.","Con el equipo responsable del área y los mandos intermedios.","Con todo el personal que compone el área en la empresa.","Con todo el personal, incluidos eventuales y transportistas autónomos que colaboren con la empresa."],"mejora":"El personal del área logística tiene una alta incidencia en el servicio al cliente y en la pérdida desconocida; todo el personal debe pasar por un adecuado proceso de selección.","pts":[0,1.14,2.27,3.41,4.55]},
+        {"id":"1a.4","texto":"¿Se dispone de perfiles competenciales actualizados para los puestos logísticos, incluidas las nuevas capacidades digitales?","ops":["No.","Parcialmente, sin método.","Sí, con método básico.","Sí, con método definido y medido.","Sí, con método integrado y mejora continua."],"mejora":"Actualice los perfiles competenciales de los puestos logísticos incorporando capacidades digitales y de análisis de datos.","pts":[0,1.14,2.27,3.41,4.55]},
+        {"id":"1a.5","texto":"¿El área logística dispone del personal suficiente y con flexibilidad para absorber los picos de demanda?","ops":["No.","Parcialmente, sin método.","Sí, con método básico.","Sí, con método definido y medido.","Sí, con método integrado y mejora continua."],"mejora":"Dimensione la plantilla logística con criterios de flexibilidad y refuerzos planificados en campaña.","pts":[0,1.14,2.27,3.41,4.55]}
+      ]},
+      {"id":"1b","nombre":"Formación y evolución de los recursos humanos del área logística","max":18.18,"preguntas":[
+        {"id":"1b.1","texto":"¿Dispone de un equipo humano con adecuada formación y experiencia?","ops":["No.","Tienen experiencia, pero la rotación de personal es muy baja.","Tienen formación adecuada, pero el nivel de rotación de personal es muy alto.","Sí.","Sí, además se les mantiene en un plan de formación continua definido de forma anual."],"mejora":"Sus equipos del área logística deben tener unos objetivos de formación anual que les permitan mejorar en el desempeño de su actividad.","pts":[0,1.14,2.27,3.41,4.55]},
+        {"id":"1b.2","texto":"¿Se dispone de un sistema de evaluación del desempeño del personal del área logística?","ops":["No.","Solo del equipo directivo del área.","Del equipo directivo y los mandos intermedios.","De todo el personal del área logística.","De todo el personal interno, así como de eventuales y transportistas autónomos habituales."],"mejora":"Defina un sistema de evaluación de todo el equipo del área logística, tanto propio como externo, de cara a mejoras en la productividad y en el servicio.","pts":[0,1.14,2.27,3.41,4.55]},
+        {"id":"1b.3","texto":"¿Existen programas de desarrollo interno y planes de carrera en el área logística?","ops":["No.","Solo para el equipo directivo del área.","Para el equipo directivo y los mandos intermedios.","Para todo el personal del área logística.","Para todo el personal interno, incluidos colaboradores habituales."],"mejora":"Debe estructurar un sistema de crecimiento del personal del área logística dentro de la organización como herramienta de motivación.","pts":[0,1.14,2.27,3.41,4.55]},
+        {"id":"1b.4","texto":"¿Se aplican programas de recualificación y actualización de capacidades ante la automatización y digitalización?","ops":["No.","Parcialmente, sin método.","Sí, con método básico.","Sí, con método definido y medido.","Sí, con método integrado y mejora continua."],"mejora":"Diseñe un plan de recualificación para las tareas que la automatización transforma o elimina.","pts":[0,1.14,2.27,3.41,4.55]}
+      ]},
+      {"id":"1c","nombre":"Comunicación y colaboración en la cadena de suministro","max":18.18,"preguntas":[
+        {"id":"1c.1","texto":"¿Se tiene establecido un plan de comunicación y coordinación con el resto de áreas de la empresa?","ops":["No existe ningún plan de comunicación ni coordinación.","Se producen comunicaciones esporádicas.","Se dispone de un conjunto de herramientas estandarizadas para la comunicación entre áreas.","Existe un sistema de comunicación estandarizado, pero solo se produce trabajo conjunto ante incidencias.","Existe un sistema de comunicación y trabajo interdepartamental totalmente estandarizado e integrado."],"mejora":"Diseñe un sistema de comunicación periódico entre todas las áreas en las que la logística incide, así como reuniones mensuales de seguimiento.","pts":[0,1.14,2.27,3.41,4.55]},
+        {"id":"1c.2","texto":"¿Se dispone de información compartida entre los integrantes de la cadena de suministro?","ops":["No.","Se comparte información relacionada con compras y ventas.","Se comparte información de procesos operativos internos.","Se comparte información de previsiones y evolución del negocio.","Se comparte todo tipo de información y se realiza un seguimiento conjunto con proveedores y clientes."],"mejora":"Estructure sistemas de comunicación periódicos con proveedores y clientes para adoptar medidas de mejora en las operaciones.","pts":[0,1.14,2.27,3.41,4.55]},
+        {"id":"1c.3","texto":"¿Se comparten con proveedores y clientes previsiones, stocks y estado de los pedidos en tiempo real?","ops":["No.","Parcialmente, sin método.","Sí, con método básico.","Sí, con método definido y medido.","Sí, con método integrado y mejora continua."],"mejora":"Establezca un intercambio periódico de previsiones y visibilidad de pedidos con proveedores y clientes clave.","pts":[0,1.14,2.27,3.41,4.55]},
+        {"id":"1c.4","texto":"¿Existen equipos o comités de planificación conjunta (S&OP) entre compras, operaciones y comercial?","ops":["No.","Parcialmente, sin método.","Sí, con método básico.","Sí, con método definido y medido.","Sí, con método integrado y mejora continua."],"mejora":"Implante un proceso de planificación de ventas y operaciones (S&OP) con reuniones periódicas y acuerdos documentados.","pts":[0,1.14,2.27,3.41,4.55]}
+      ]},
+      {"id":"1d","nombre":"Planificación del área logística","max":22.73,"preguntas":[
+        {"id":"1d.1","texto":"¿Interviene el área logística en la planificación estratégica de la empresa?","ops":["No interviene en ningún proceso de planificación.","Aporta información sobre sus necesidades puntuales.","Participa en la planificación de recursos materiales y humanos.","Participa activamente en la planificación de recursos e inventarios.","Se encuentra totalmente integrada en el equipo de planificación estratégica."],"mejora":"Logística debe participar de forma transversal en la planificación de recursos y política de inventarios.","pts":[0,1.14,2.27,3.41,4.55]},
+        {"id":"1d.2","texto":"¿Existen procedimientos definidos para la gestión operativa logística?","ops":["No existe ningún procedimiento formal.","Procedimientos muy deficientes con numerosos errores en la gestión.","Procedimientos poco estructurados con errores frecuentes.","Procedimientos satisfactorios con fallos mínimos.","Procedimientos estandarizados y gestión de máxima calidad sin errores."],"mejora":"Se deben documentar procedimientos operativos estandarizados que cubran los escenarios clave de trabajo.","pts":[0,1.14,2.27,3.41,4.55]},
+        {"id":"1d.3","texto":"¿Se definen programas de trabajo y flujos a lo largo de la cadena de suministro?","ops":["No se define ningún programa de trabajo.","Estudio superficial de movimientos y secuencias.","Determinación básica del flujo de mercancías.","Determinación y secuenciación precisa de cargas y movimientos.","Planificación conjunta y sincronizada con todos los integrantes de la cadena."],"mejora":"Analice y planifique las cargas de trabajo a nivel semanal para ajustar capacidades técnicas y humanas con antelación.","pts":[0,1.14,2.27,3.41,4.55]},
+        {"id":"1d.4","texto":"¿Está definida la estrategia de la red logística (número y localización de centros y hubs)?","ops":["No.","Parcialmente, sin método.","Sí, con método básico.","Sí, con método definido y medido.","Sí, con método integrado y mejora continua."],"mejora":"Revise la estrategia de red logística: número de almacenes, su ubicación y su rol en el servicio al cliente.","pts":[0,1.14,2.27,3.41,4.55]},
+        {"id":"1d.5","texto":"¿Se incorporan criterios de sostenibilidad y de reducción de emisiones a las decisiones logísticas?","ops":["No.","Parcialmente, sin método.","Sí, con método básico.","Sí, con método definido y medido.","Sí, con método integrado y mejora continua."],"mejora":"Incorpore criterios de huella de carbono y eficiencia energética en las decisiones de diseño de red, almacén y transporte.","pts":[0,1.14,2.27,3.41,4.55]}
+      ]},
+      {"id":"1e","nombre":"Control y mejora continua en la cadena de suministro","max":18.18,"preguntas":[
+        {"id":"1e.1","texto":"¿Se conoce y evalúa la eficiencia de los recursos logísticos?","ops":["No se conoce ni se evalúa.","Se realizan estimaciones aisladas.","Se conoce la eficiencia de los recursos de forma general.","Se monitoriza sistemáticamente la eficiencia de los recursos.","Se audita con precisión y se optimiza continuamente la eficiencia de los recursos."],"mejora":"El área logística debe evaluar continuamente la productividad de los recursos asignados.","pts":[0,1.14,2.27,3.41,4.55]},
+        {"id":"1e.2","texto":"¿Se establecen planes de acción y objetivos de mejora?","ops":["No se establece ningún tipo de plan formal.","Cada departamento acomete mejoras aisladas sin coordinación.","Se establecen planes coordinados para toda el área logística y la empresa.","Planes con benchmarking sectorial e implantación estructurada de hitos.","Planes coordinados y objetivos compartidos con toda la cadena de suministro."],"mejora":"Establezca planes de mejora de forma coordinada con proveedores y clientes mediante comparativas de mercado.","pts":[0,1.14,2.27,3.41,4.55]},
+        {"id":"1e.3","texto":"¿Se dispone de un cuadro de mando integral de la cadena de suministro en tiempo real?","ops":["No.","Parcialmente, sin método.","Sí, con método básico.","Sí, con método definido y medido.","Sí, con método integrado y mejora continua."],"mejora":"Construya un cuadro de mando de la cadena de suministro con indicadores clave de servicio, coste y sostenibilidad.","pts":[0,1.14,2.27,3.41,4.55]},
+        {"id":"1e.4","texto":"¿Se ha definido un plan de continuidad y una matriz de riesgos en la cadena de suministro?","ops":["No.","Parcialmente, sin método.","Sí, con método básico.","Sí, con método definido y medido.","Sí, con método integrado y mejora continua."],"mejora":"Defina un plan de continuidad del negocio y una matriz de riesgos logísticos con planes de contingencia documentados.","pts":[0,1.14,2.27,3.41,4.55]}
+      ]}
+    ]},
+    {"id":"2","nombre":"Compras","max":100,"dims":[
+      {"id":"2a","nombre":"Organización, estrategia y control del área de compras","max":29.17,"preguntas":[
+        {"id":"2a.1","texto":"¿Existe una estructura organizativa adecuada a las tareas del proceso de compra?","ops":["Todas las funciones recaen en la misma persona.","Se diferencian las tareas de compra de las puramente administrativas.","Se separan tareas administrativas y logísticas del resto de compras.","Se dividen responsabilidades en administración, compras, stocks y logística.","Especialización total con compradores expertos por familia o categoría de producto."],"mejora":"Diferencie claramente las responsabilidades estratégicas de compras y aprovisionamiento de las administrativas.","pts":[0,1.04,2.08,3.13,4.17]},
+        {"id":"2a.2","texto":"¿El departamento de compras dispone de una estrategia coordinada con la cadena de suministro?","ops":["No.","Solo se definen metas internas de compras aisladas.","Estrategia coordinada con los departamentos internos implicados.","Estrategias coordinadas tanto internamente como con proveedores clave.","Estrategia de compras integrada con toda la cadena de suministro."],"mejora":"Defina una estrategia formal para compras que responda a las necesidades del servicio general.","pts":[0,1.04,2.08,3.13,4.17]},
+        {"id":"2a.3","texto":"¿Se encuentran definidas políticas y procedimientos de funcionamiento en compras?","ops":["No se encuentran definidas.","Existe una política general básica.","Se dispone de procedimientos documentados de trabajo.","Existen políticas claras de compra y homologación de proveedores.","Procedimientos integrados y auditados de acuerdo con la política general."],"mejora":"Formalice políticas de compras por escrito que sirvan de marco operativo a las decisiones.","pts":[0,1.04,2.08,3.13,4.17]},
+        {"id":"2a.4","texto":"¿Se participa en grupos o centrales para la reducción de precios de compra?","ops":["No se participa en grupos de compra.","Se participa a nivel local.","Se participa a nivel autonómico.","Se participa a nivel nacional.","Se participa a nivel internacional."],"mejora":"Explore la participación en centrales de compra sectoriales para ganar escala en referencias genéricas.","pts":[0,1.04,2.08,3.13,4.17]},
+        {"id":"2a.5","texto":"¿Se elaboran cuadros de mando con indicadores de gestión de compras?","ops":["No.","Se miden indicadores básicos del proveedor.","Se analizan indicadores clave de forma periódica.","Se dispone de un cuadro de mando integral de compras.","Cuadro de mando analizado con seguimiento continuo y planes de acción."],"mejora":"Obtenga indicadores sistemáticos sobre el cumplimiento de plazos y calidad de entrega de los proveedores.","pts":[0,1.04,2.08,3.13,4.17]},
+        {"id":"2a.6","texto":"¿Se aplican criterios ambientales, sociales y de gobernanza (ASG) en la homologación?","ops":["No.","Parcialmente, sin método.","Sí, con método básico.","Sí, con método definido y medido.","Sí, con método integrado y mejora continua."],"mejora":"Incorpore cláusulas de sostenibilidad y buenas prácticas en la homologación de sus proveedores.","pts":[0,1.04,2.08,3.13,4.17]},
+        {"id":"2a.7","texto":"¿Se dispone de un plan para reducir la dependencia de proveedores críticos?","ops":["No.","Parcialmente, sin método.","Sí, con método básico.","Sí, con método definido y medido.","Sí, con método integrado y mejora continua."],"mejora":"Mapee los proveedores estratégicos y desarrolle fuentes alternativas de suministro para evitar roturas.","pts":[0,1.04,2.08,3.13,4.17]}
+      ]},
+      {"id":"2b","nombre":"Ciclo de aprovisionamiento: preparación de la compra","max":20.83,"preguntas":[
+        {"id":"2b.1","texto":"¿Las especificaciones de los materiales a aprovisionar están claramente definidas?","ops":["Se desconocen técnicamente las especificaciones.","Compras no dispone de conocimiento técnico sobre lo que compra.","Se cuenta con conocimiento técnico suficiente.","Especificaciones bien definidas, aunque compras no participa en el diseño inicial.","Compras participa activamente en el diseño y definición técnica de materiales."],"mejora":"Asegúrese de que el equipo de compras disponga de fichas técnicas completas de los artículos a adquirir.","pts":[0,1.04,2.08,3.12,4.17]},
+        {"id":"2b.2","texto":"¿Se especifican criterios económicos y logísticos en la preparación de la compra?","ops":["No.","Solo se especifican precios unitarios.","Se incorporan variables de gestión de stocks y costes asociados.","Se integran variables de almacenamiento, transporte y manipulación.","Se ponderan todas las variables del coste total de propiedad (TCO)."],"mejora":"Exija que las solicitudes de compra incluyan parámetros de impacto logístico y financiero global.","pts":[0,1.04,2.08,3.12,4.17]},
+        {"id":"2b.3","texto":"¿Interviene el área de compras en el diseño del producto o formato de entrega?","ops":["No.","Sí, definiendo unidades por palé.","Sí, definiendo unidades por caja y embalaje secundario.","Sí, adaptando la unidad de carga a la operativa.","Se optimizan conjuntamente con proveedores las unidades de carga y el ecodiseño."],"mejora":"Involucre a compras en la adaptación de formatos y embalajes a las unidades de carga estándar.","pts":[0,1.04,2.08,3.12,4.17]},
+        {"id":"2b.4","texto":"¿Se dispone de procedimientos estandarizados de detección de necesidades de compra?","ops":["No.","Detección reactiva ante urgencias y roturas comunicadas por clientes.","Estimaciones subjetivas del comprador.","Procesos planificados apoyados en análisis comercial y marketing.","Detección automatizada por integración de la demanda en la cadena."],"mejora":"Estructure mecanismos de previsión para no depender de la resolución improvisada de roturas.","pts":[0,1.04,2.08,3.12,4.17]},
+        {"id":"2b.5","texto":"¿Existe una toma de decisiones conjunta para ponderar los criterios de compra?","ops":["No se realiza ninguna ponderación formal.","Compras pondera según su criterio aislado.","Ponderación coordinada exclusivamente con finanzas.","Compras coordina la matriz de decisión con todas las áreas internas.","Ponderación matricial por categoría coordinada interdepartamentalmente."],"mejora":"Defina matrices de ponderación de compras que equilibren precio, calidad y fiabilidad logística.","pts":[0,1.04,2.08,3.12,4.17]}
+      ]},
+      {"id":"2c","nombre":"Ciclo de aprovisionamiento: planificación y búsqueda","max":12.5,"preguntas":[
+        {"id":"2c.1","texto":"¿Se dispone de sistemas estructurados para la búsqueda de proveedores?","ops":["No existe ningún método; se recurre a lo conocido.","Consulta de catálogos y referencias básicas.","Uso de buscadores y directorios especializados.","Búsqueda activa en asociaciones sectoriales y ferias industriales.","Plataformas digitales de aprovisionamiento y marketplaces B2B."],"mejora":"Organice una base de datos activa de proveedores potenciales por categoría de compra.","pts":[0,1.04,2.08,3.13,4.17]},
+        {"id":"2c.2","texto":"¿Se dispone de un procedimiento formal de solicitud y comparación de ofertas (RFP)?","ops":["No.","Solo para compras excepcionales o promociones.","Procedimiento básico sin plantillas homologadas.","Procedimiento estandarizado con matriz comparativa formal.","Gestión digital integrada de peticiones y comparativas de ofertas en el ERP."],"mejora":"Estandarice las plantillas de petición de ofertas para agilizar la toma de decisiones objetiva.","pts":[0,1.04,2.08,3.13,4.17]},
+        {"id":"2c.3","texto":"¿Se seleccionan los proveedores con base en una metodología conocida?","ops":["No existe metodología objetiva.","Criterios exclusivamente subjetivos del comprador.","Criterio cualitativo colegiado entre áreas afectadas.","Metodología básica con baremo de puntuaciones.","Proceso formal de homologación y auditoría periódica de proveedores."],"mejora":"Documente y unifique los criterios de selección de proveedores para toda la organización.","pts":[0,1.04,2.08,3.13,4.17]}
+      ]},
+      {"id":"2d","nombre":"Ciclo de compra: realización y seguimiento","max":25,"preguntas":[
+        {"id":"2d.1","texto":"¿Se realizan negociaciones estructuradas y periódicas con los proveedores?","ops":["No.","Puntuales y basadas únicamente en el precio.","Periódicas pero enfocadas solo en condiciones económicas.","Periódicas y ampliadas a plazos, embalajes y condiciones de entrega.","Estratégicas y basadas en acuerdos de colaboración y objetivos conjuntos."],"mejora":"Amplíe la negociación con proveedores más allá del precio, incluyendo acuerdos de nivel de servicio.","pts":[0,1.04,2.08,3.13,4.17]},
+        {"id":"2d.2","texto":"¿Se gestionan las compras mediante documentos y contratos estandarizados?","ops":["No.","Solo en operaciones extraordinarias.","Sí, pero en formatos físicos o sin integrar en el sistema de gestión.","Sí, y todos los pedidos y contratos quedan registrados en el ERP.","Totalmente estandarizado y gestionado mediante EDI o portales de compras."],"mejora":"Centralice todos los compromisos y pedidos de compra en su software corporativo.","pts":[0,1.04,2.08,3.13,4.17]},
+        {"id":"2d.3","texto":"¿Se evalúan las ofertas con herramientas objetivas y conocidas?","ops":["No, según intuición del comprador.","Se utiliza metodología objetiva solo de forma esporádica.","Existe método objetivo pero sin herramienta que lo soporte.","Todas las ofertas se evalúan mediante la misma metodología documentada.","Herramienta digitalizada que soporta y archiva las evaluaciones de ofertas."],"mejora":"Utilice herramientas homogéneas de baremación para asegurar la transparencia y el rigor de compras.","pts":[0,1.04,2.08,3.13,4.17]},
+        {"id":"2d.4","texto":"¿Qué parámetros se evalúan en la comparativa de ofertas?","ops":["Únicamente el precio.","Precio y especificaciones técnicas.","Precio, calidad técnica y plazos de entrega confirmados.","Precio, calidad, plazo y requisitos de suministro logístico.","Todos los anteriores, realizando auditoría de cumplimiento real posterior."],"mejora":"Incorpore factores de fiabilidad logística y plazos de entrega en la evaluación de cada oferta.","pts":[0,1.04,2.08,3.13,4.17]},
+        {"id":"2d.5","texto":"¿Los plazos de entrega de los proveedores se adecuan a sus necesidades?","ops":["Plazos inaceptables con retrasos crónicos.","Plazos excesivamente elevados.","Plazos irregulares que complican la planificación.","Plazos adecuados que permiten planificar el stock.","Plazos óptimos, estables y concertados."],"mejora":"Trabaje con sus proveedores en la reducción de los plazos de entrega (*lead times*).","pts":[0,1.04,2.08,3.13,4.17]},
+        {"id":"2d.6","texto":"¿Se conoce el coste de los materiales por producto o servicio final?","ops":["Se desconoce totalmente.","Se tiene un conocimiento muy aproximado o intuitivo.","Se cuenta con estimaciones teóricas no actualizadas.","Se conoce con precisión y se actualiza periódicamente.","Escandallo exacto con trazabilidad total del coste unitario."],"mejora":"Mantenga actualizado el coste real de los materiales por unidad producida o servida.","pts":[0,1.04,2.08,3.13,4.17]}
+      ]},
+      {"id":"2e","nombre":"Tecnología aplicada al proceso de compras","max":12.5,"preguntas":[
+        {"id":"2e.1","texto":"¿Se dispone de una aplicación informática para gestionar las compras?","ops":["No.","Herramientas ofimáticas aisladas sin conexión al resto del negocio.","Módulo básico de compras desconectado del ERP.","Software de compras conectado externamente al sistema central.","Proceso de compra integrado íntegramente en el ERP."],"mejora":"Digitalice la emisión y control de pedidos de compra integrándolos en su ERP.","pts":[0,1.04,2.08,3.13,4.17]},
+        {"id":"2e.2","texto":"¿Qué herramientas se utilizan para comunicarse operativamente con los proveedores?","ops":["Teléfono y mensajería no estructurada.","Correo electrónico convencional.","Catálogo electrónico y formularios web.","Portales B2B o plataformas colaborativas.","Integración automatizada mediante EDI o API."],"mejora":"Avance hacia herramientas de comunicación digital estructurada con sus proveedores habituales.","pts":[0,1.04,2.08,3.13,4.17]},
+        {"id":"2e.3","texto":"¿El flujo de compra está digitalizado de extremo a extremo?","ops":["Completamente manual y en papel.","Parcialmente con intercambios de correos electrónicos.","Peticiones y confirmaciones digitales al proveedor.","Flujo digital con autorizaciones internas y validación de facturas.","Integración de extremo a extremo (catálogo, orden, albarán y factura electrónica)."],"mejora":"Elimine el papel del ciclo de compras implementando circuitos de validación electrónica.","pts":[0,1.04,2.08,3.13,4.17]}
+      ]}
+    ]},
+    {"id":"3","nombre":"Gestión de stock y aprovisionamiento","max":150,"dims":[
+      {"id":"3a","nombre":"Organización, estrategia y control de la gestión de existencias","max":24.19,"preguntas":[
+        {"id":"3a.1","texto":"¿Dispone el área de existencias de una estrategia alineada con la cadena de suministro?","ops":["No.","Estrategias aisladas para reducir stock sin coordinar.","Estrategia coordinada con compras y operaciones internas.","Estrategia coordinada con producción, ventas y proveedores.","Estrategia de inventarios sincronizada a lo largo de toda la cadena."],"mejora":"Defina políticas de stock alineadas con los objetivos de servicio al cliente y coste financiero.","pts":[0,1.21,2.42,3.63,4.84]},
+        {"id":"3a.2","texto":"¿Se encuentran definidas políticas y procedimientos para la gestión de stocks?","ops":["No se encuentran definidas.","Existe una política informal.","Procedimientos definidos para reposición de existencias.","Políticas documentadas de stock de seguridad, coberturas y eliminación de obsoletos.","Procedimientos integrados con reaprovisionamiento colaborativo (VMI)."],"mejora":"Establezca procedimientos claros para el cálculo de puntos de pedido y stocks de seguridad.","pts":[0,1.21,2.42,3.63,4.84]},
+        {"id":"3a.3","texto":"¿El personal conoce los métodos analíticos de gestión de inventarios?","ops":["No disponen de formación en la materia.","Conocimiento empírico por experiencia en el puesto.","Formación teórica básica pero escasa experiencia práctica.","Personal cualificado en análisis cuantitativo de existencias.","Equipo experto con actualización continua en analítica avanzada de demanda."],"mejora":"Capacite al personal en técnicas cuantitativas de dimensionamiento de inventarios.","pts":[0,1.21,2.42,3.63,4.84]},
+        {"id":"3a.4","texto":"¿Se dispone de un sistema de seguimiento del estado del stock?","ops":["No.","Informes periódicos básicos de existencias.","Seguimiento regular de valor del stock y rotación.","Sistema analítico continuo de coberturas y roturas.","Seguimiento continuo y cuadro de mando compartido con socios clave."],"mejora":"Defina métricas clave de inventario (rotación, cobertura, roturas) y revíselas mensualmente.","pts":[0,1.21,2.42,3.63,4.84]},
+        {"id":"3a.5","texto":"¿Se emplean técnicas avanzadas de previsión de la demanda?","ops":["No, decisiones intuitivas.","Hojas de cálculo con medias móviles simples.","Modelos estadísticos estacionales.","Modelos estadísticos avanzados por familia de producto.","Algoritmos de aprendizaje automático integrados con variables de mercado."],"mejora":"Evolucione el cálculo de previsiones mediante modelos estadísticos adaptados a la estacionalidad.","pts":[0,1.21,2.42,3.63,4.84]}
+      ]},
+      {"id":"3b","nombre":"Sistema de elaboración de previsiones de venta","max":14.52,"preguntas":[
+        {"id":"3b.1","texto":"¿Cómo se elaboran las previsiones de ventas en la empresa?","ops":["No se realiza ninguna previsión formal.","Estimaciones basadas exclusivamente en históricos simples.","Técnicas cuantitativas o cualitativas estructuradas.","Análisis de desviaciones para ajustar coeficientes en periodos futuros.","Previsión consensuada compartida con el resto de la cadena de suministro."],"mejora":"Estructure un proceso periódico de previsión de ventas con participación del área comercial.","pts":[0,1.21,2.42,3.63,4.84]},
+        {"id":"3b.2","texto":"¿Se analizan y documentan las desviaciones de las previsiones de venta?","ops":["No.","Solo las analiza el responsable de almacén o inventario.","Análisis conjunto con el departamento comercial.","Revisión interna y comunicación de causas a proveedores.","Análisis causal colaborativo con todos los agentes de la cadena."],"mejora":"Documente mensualmente los errores de previsión (*forecast accuracy*) para corregir sesgos.","pts":[0,1.21,2.42,3.63,4.84]},
+        {"id":"3b.3","texto":"¿Se tienen en cuenta las campañas de marketing y lanzamientos en el aprovisionamiento?","ops":["No.","Se conocen informalmente sin coordinar compras.","Se coordinan con los departamentos internos involucrados.","Se planifican stocks específicos acordados con proveedores.","Planificación comercial conjunta con visibilidad en tiempo real en la cadena."],"mejora":"Incorpore las promociones y lanzamientos en el cálculo anticipado de compras y stock.","pts":[0,1.21,2.42,3.63,4.84]}
+      ]},
+      {"id":"3c","nombre":"Proceso operativo de gestión de existencias","max":58.06,"preguntas":[
+        {"id":"3c.1","texto":"¿Están definidos los parámetros de stock por producto (stock de seguridad, punto de pedido)?","ops":["No están definidos.","Definidos solo para una minoría de referencias críticas.","Definidos pero no actualizados de forma sistemática.","Definidos y parametrizados para toda la gama activa.","Parámetros dinámicos calculados e integrados en el sistema informático."],"mejora":"Parametrice los niveles de stock mínimo y punto de pedido para cada referencia del catálogo.","pts":[0,1.21,2.42,3.63,4.84]},
+        {"id":"3c.2","texto":"¿Se utilizan las previsiones comerciales como variable de cálculo del aprovisionamiento?","ops":["No.","Solo se mira el consumo del mes anterior.","Cálculos basados en históricos pasados.","Se integran previsiones comerciales formales.","Previsiones comerciales revisadas dinámicamente con alertas automáticas."],"mejora":"Vincule las órdenes de reaprovisionamiento a las previsiones de demanda futura.","pts":[0,1.21,2.42,3.63,4.84]},
+        {"id":"3c.3","texto":"¿Se revisan periódicamente los parámetros de stock en función del mercado?","ops":["No se revisan nunca.","Revisiones muy espaciadas en el tiempo (más de un año).","Revisiones periódicas ligadas a los inventarios físicos.","Revisiones sistemáticas basadas en la evolución de ventas y *lead time*.","Ajustes dinámicos continuos con base en la demanda real."],"mejora":"Revise al menos trimestralmente los parámetros de stock de sus artículos con mayor rotación.","pts":[0,1.21,2.42,3.63,4.84]},
+        {"id":"3c.4","texto":"¿Se formalizan las compras mediante plantillas y contratos de aprovisionamiento?","ops":["No.","Solo con proveedores puntuales.","Sí, pero sin registrarse en el sistema de gestión.","Sí, y todas las órdenes quedan grabadas en el sistema.","Transmisión electrónica directa vinculada a la planificación."],"mejora":"Estandarice las órdenes y plantillas de pedido para evitar duplicidades y errores.","pts":[0,1.21,2.42,3.63,4.84]},
+        {"id":"3c.5","texto":"¿Se realiza siempre el aprovisionamiento mediante documento formal de pedido?","ops":["No, se pide verbalmente o por mensajes informales.","Solo para pedidos extraordinarios.","Se emite documento pero no se graba sistemáticamente.","Se genera orden formal de pedido para todas las compras.","Emisión, envío electrónico y confirmación desatendida de pedidos."],"mejora":"Exija que ninguna compra se curse sin su correspondiente orden de pedido oficial registrada.","pts":[0,1.21,2.42,3.63,4.84]},
+        {"id":"3c.6","texto":"¿Qué información se detalla en el documento de pedido al proveedor?","ops":["Únicamente referencias y cantidades.","Referencias, cantidades y precios acordados.","Referencias, precios y fechas límite de entrega en destino.","Lo anterior más condiciones logísticas de embalaje y paletizado.","Datos completos con seguimiento y control de cumplimiento por línea."],"mejora":"Incluya siempre en los pedidos la fecha de entrega acordada y las condiciones de paletizado.","pts":[0,1.21,2.42,3.63,4.84]},
+        {"id":"3c.7","texto":"¿Se aplican políticas activas de reducción de stock en la empresa?","ops":["No existen políticas de reducción.","Se actúa solo ante productos totalmente obsoletos.","Campañas puntuales sobre excesos con más de seis meses sin movimiento.","Políticas continuas de optimización del capital circulante.","Gestión ajustada (*lean*) con reducción sistemática de inmovilizado."],"mejora":"Establezca revisiones periódicas para identificar excesos de stock y darles salida comercial.","pts":[0,1.21,2.42,3.63,4.84]},
+        {"id":"3c.8","texto":"¿Cuál es la frecuencia y nivel de roturas de stock que experimenta?","ops":["Stocks elevados y frecuentes roturas de servicio.","Roturas habituales que impactan en el cliente.","Roturas ocasionales en épocas de alta demanda.","Stocks ajustados con roturas excepcionales.","Cero roturas en referencias clave y volumen de inventario optimizado."],"mejora":"Ajuste el stock de seguridad de los artículos estratégicos para blindar el nivel de servicio.","pts":[0,1.21,2.42,3.63,4.84]},
+        {"id":"3c.9","texto":"¿La rotación de inventarios se adecua a los estándares del sector?","ops":["Muy baja, con alto inmovilizado.","Baja.","Aceptable.","Alta.","Muy alta, con modelos de flujo sincronizado (FIFO, *cross-docking*)."],"mejora":"Incremente la velocidad de rotación reduciendo lotes de compra y mejorando previsiones.","pts":[0,1.21,2.42,3.63,4.84]},
+        {"id":"3c.10","texto":"¿Se dispone de un protocolo para la gestión de productos obsoletos o dañados?","ops":["Se desconoce el volumen de producto obsoleto.","No existe protocolo; se acumulan en almacén.","Se identifica y separa físicamente el producto deteriorado.","Políticas preventivas y de liquidación comercial programada.","Gestión circular con prevención en origen y acuerdos de devolución."],"mejora":"Audite el almacén para desdotar y liquidar los productos que no han tenido ventas en el último año.","pts":[0,1.21,2.42,3.63,4.84]},
+        {"id":"3c.11","texto":"¿Existe trazabilidad de la fecha de entrega confirmada por los proveedores?","ops":["No se recibe confirmación de fechas de entrega.","Confirmaciones verbales o por teléfono.","Confirmación por correo electrónico.","Portal web de seguimiento de entregas.","Integración electrónica mediante EDI (*DESADV*) o APIs."],"mejora":"Exija a sus proveedores la confirmación formal de la fecha prevista de entrega tras recibir el pedido.","pts":[0,1.21,2.42,3.63,4.84]},
+        {"id":"3c.12","texto":"¿El seguimiento de pedidos aporta información útil para la planificación?","ops":["No existe seguimiento de pedidos pendientes.","Hay seguimiento pero no se traslada a la planificación.","El seguimiento permite reaccionar ante retrasos conocidos.","Información actualizada disponible para producción y ventas.","Trazabilidad en tiempo real integrada en el plan maestro."],"mejora":"Alimente las previsiones y compromisos con clientes usando el estado real de los pedidos pendientes.","pts":[0,1.21,2.42,3.63,4.84]}
+      ]},
+      {"id":"3d","nombre":"Control y auditoría del inventario","max":33.87,"preguntas":[
+        {"id":"3d.1","texto":"¿Se controla la rotación individualizada por artículo?","ops":["Se desconoce la rotación de los artículos.","Se dispone de datos pero no se analizan.","Control de rotación en referencias prioritarias (clasificación ABC).","Control de rotación en la gran mayoría del catálogo.","Control exhaustivo con cálculo automatizado del índice de rotación."],"mejora":"Implante una clasificación ABC para centrar el control en el 20 % de referencias que generan el 80 % de ventas.","pts":[0,1.21,2.42,3.63,4.84]},
+        {"id":"3d.2","texto":"¿Los proveedores cumplen las cantidades solicitadas en las órdenes?","ops":["Errores continuos en las cantidades entregadas.","Desviaciones frecuentes.","Desviaciones puntuales en momentos de tensión de mercado.","Cumplimiento habitual con incidencias mínimas.","Fiabilidad del 100 % en cantidades entregadas."],"mejora":"Mida el indicador OTIF (*On-Time In-Full*) para exigir rigor en el volumen suministrado.","pts":[0,1.21,2.42,3.63,4.84]},
+        {"id":"3d.3","texto":"¿Los proveedores cumplen los plazos pactados de entrega?","ops":["Incumplimiento generalizado de fechas.","Retrasos sistemáticos y frecuentes.","Cumplimiento aceptable con retrasos moderados.","Desviaciones excepcionales sobre la fecha prevista.","Puntualidad absoluta en todas las entregas."],"mejora":"Evalúe el retraso medio de sus proveedores y penalice las desviaciones recurrentes.","pts":[0,1.21,2.42,3.63,4.84]},
+        {"id":"3d.4","texto":"¿Con qué periodicidad se realizan inventarios físicos de almacén?","ops":["Nunca.","Una vez al año.","Varias veces al año.","Mensualmente.","Inventarios cíclicos continuos."],"mejora":"Adopte un sistema de inventario rotativo o cíclico para evitar las paralizaciones del inventario anual.","pts":[0,1.21,2.42,3.63,4.84]},
+        {"id":"3d.5","texto":"¿El saldo contable de inventario coincide con las existencias físicas?","ops":["No existe control de existencias físicas.","Diferencias notables y constantes.","Desviaciones moderadas que exigen ajustes frecuentes.","Diferencias mínimas localizadas y explicadas.","Coincidencia total con exactitud de inventario superior al 98 %."],"mejora":"Investigue de inmediato la causa raíz de las mermas o diferencias entre el sistema y la estantería.","pts":[0,1.21,2.42,3.63,4.84]},
+        {"id":"3d.6","texto":"¿Se dispone de un sistema de gestión de almacén (SGA) con visión en tiempo real?","ops":["No.","Parcialmente, sin método.","Sí, con método básico.","Sí, con método definido y medido.","Sí, con método integrado y mejora continua."],"mejora":"Implante un SGA con lectura por código de barras para tener visibilidad inmediata del stock.","pts":[0,1.21,2.42,3.63,4.84]},
+        {"id":"3d.7","texto":"¿Se realiza analítica de existencias para anticipar excesos y desequilibrios?","ops":["No.","Parcialmente, sin método.","Sí, con método básico.","Sí, con método definido y medido.","Sí, con método integrado y mejora continua."],"mejora":"Analice mensualmente el inventario para reubicar excesos y equilibrar el stock entre instalaciones.","pts":[0,1.21,2.42,3.63,4.84]}
+      ]},
+      {"id":"3e","nombre":"Tecnología aplicada a la gestión de inventario","max":19.35,"preguntas":[
+        {"id":"3e.1","texto":"¿Se dispone de software especializado para calcular previsiones y reaprovisionamiento?","ops":["No.","Hojas de cálculo gestionadas por los propios usuarios.","Software independiente desconectado del ERP.","Herramienta conectada que intercambia datos con el ERP.","Módulo avanzado de previsión y aprovisionamiento integrado en el ERP."],"mejora":"Sustituya las hojas de cálculo manuales por herramientas integradas de cálculo de necesidades de aprovisionamiento.","pts":[0,1.21,2.42,3.63,4.84]},
+        {"id":"3e.2","texto":"¿Se dispone de una aplicación para gestionar las órdenes de compra?","ops":["No.","Emisión manual sin vincular al resto de departamentos.","Módulo básico de compras dentro del ERP corporativo.","Solución de compras especializada que cubre el ciclo íntegro.","Gestión integral del aprovisionamiento integrada con almacén y finanzas."],"mejora":"Conecte el módulo de aprovisionamiento con la contabilidad para automatizar la casación de albaranes y facturas.","pts":[0,1.21,2.42,3.63,4.84]},
+        {"id":"3e.3","texto":"¿Se emplean plataformas digitales colaborativas con los proveedores?","ops":["No.","Correo electrónico convencional.","Consulta de catálogos electrónicos.","Plataformas de intercambio B2B.","Intercambio electrónico EDI integrado."],"mejora":"Utilice canales electrónicos estructurados para confirmar pedidos y recibir albaranes de entrega.","pts":[0,1.21,2.42,3.63,4.84]},
+        {"id":"3e.4","texto":"¿El inventario está completamente sistematizado e informatizado?","ops":["No.","Solo a efectos de registro contable.","El sistema realiza cálculos y propuestas de reposición.","Reaprovisionamiento automático según parámetros de stock.","Visibilidad en tiempo real accesible también para clientes clave."],"mejora":"Configure sugerencias automáticas de compra en su software en función del punto de pedido.","pts":[0,1.21,2.42,3.63,4.84]}
+      ]}
+    ]},
+    {"id":"4","nombre":"Almacén","max":150,"dims":[
+      {"id":"4a","nombre":"Organización, estrategia y control de almacenes","max":22.22,"preguntas":[
+        {"id":"4a.1","texto":"¿Se incluye la gestión de almacén dentro de la planificación estratégica?","ops":["No.","Solo se planifica la plantilla necesaria.","Planificación global de recursos técnicos, espacio y personal.","Planificación integral con análisis periódico de alternativas de subcontratación.","Planificación sincronizada con la red de suministro de clientes y proveedores."],"mejora":"Incluya la capacidad y costes del almacén en la planificación estratégica anual de la empresa.","pts":[0,1.39,2.78,4.17,5.56]},
+        {"id":"4a.2","texto":"¿Se dispone de métricas que analicen la productividad y ocupación del almacén?","ops":["No.","Estimación del porcentaje de ocupación física.","Control de ocupación y previsión de saturación a corto plazo.","Control exhaustivo de ocupación, flujos y coste por metro cuadrado.","Cuadro de control del almacén integrado con los costes de toda la cadena."],"mejora":"Calcule y supervise mensualmente el porcentaje de ocupación y el coste de almacenamiento por palé o unidad.","pts":[0,1.39,2.78,4.17,5.56]},
+        {"id":"4a.3","texto":"¿Está claramente definido el liderazgo y las funciones del jefe de almacén?","ops":["No hay responsable formal.","El operario más veterano asume la coordinación informal.","Existe jefe de almacén pero sin funciones delimitadas por escrito.","Jefe de almacén con funciones, autoridad y responsabilidades documentadas.","Responsable de almacén con objetivos vinculados al plan estratégico y formación continua."],"mejora":"Defina por escrito el perfil de puesto y responsabilidades del jefe de almacén.","pts":[0,1.39,2.78,4.17,5.56]},
+        {"id":"4a.4","texto":"¿Se dispone de un plan de prevención y seguridad laboral en el almacén?","ops":["No.","Medios básicos de extinción de incendios.","Simulacros periódicos e inspecciones reglamentarias de seguridad.","Inspecciones periódicas de estanterías (norma UNE-EN 15635) y prevención activa.","Cultura de seguridad total con formación continua y auditorías preventivas periódicas."],"mejora":"Audite anualmente el estado de las estanterías metálicas y forme a los operarios en manipulación segura.","pts":[0,1.39,2.78,4.17,5.56]}
+      ]},
+      {"id":"4b","nombre":"Características y diseño de la distribución en planta (*layout*)","max":61.11,"preguntas":[
+        {"id":"4b.1","texto":"¿La superficie total de almacenamiento disponible es adecuada?","ops":["Muy insuficiente, saturación continua.","Insuficiente en temporadas clave.","Suficiente para la actividad normal.","Amplia y con margen para absorber incrementos de demanda.","Superficie óptima dimensionada según la rotación de mercancías."],"mejora":"Analice la capacidad de almacenamiento y redistribuya espacios para evitar cuellos de botella.","pts":[0,1.39,2.78,4.17,5.56]},
+        {"id":"4b.2","texto":"¿La capacidad cúbica o volumétrica de almacenamiento está optimizada?","ops":["Aprovechamiento muy deficiente de la altura.","Capacidad reducida con mucho espacio vertical desaprovechado.","Capacidad adecuada al volumen habitual.","Buen aprovechamiento volumétrico.","Capacidad cúbica maximizada mediante sistemas de almacenaje en altura."],"mejora":"Aproveche el volumen vertical instalando estanterías adecuadas a la altura libre de la nave.","pts":[0,1.39,2.78,4.17,5.56]},
+        {"id":"4b.3","texto":"¿Están claramente delimitadas las áreas funcionales del almacén?","ops":["No hay delimitación de zonas.","Áreas poco definidas con invasión habitual de pasillos.","Zonas básicas definidas (recepción, almacenaje, preparación y expedición).","Áreas perfectamente delimitadas con flujos lineales o en U.","Zonificación óptima con áreas específicas para devoluciones, envases y mantenimiento."],"mejora":"Pinte y delimite físicamente las áreas de recepción, almacenaje, preparación y muelles de carga.","pts":[0,1.39,2.78,4.17,5.56]},
+        {"id":"4b.4","texto":"¿La distribución en planta minimiza los desplazamientos internos?","ops":["Recorridos excesivamente largos y desordenados.","Distribución poco eficiente con cruces continuos.","Recorridos razonables en la operativa ordinaria.","Buena distribución que reduce tiempos de traslado.","Distribución optimizada (*layout* de mínima distancia de recorrido)."],"mejora":"Rediseñe los pasillos y ubicaciones de alta rotación cerca de los muelles para acortar recorridos.","pts":[0,1.39,2.78,4.17,5.56]},
+        {"id":"4b.5","texto":"¿Los sistemas de almacenamiento son idóneos para la tipología de producto?","ops":["Sistemas inadecuados que dañan o ralentizan la mercancía.","Sistemas convencionales no adaptados a las cargas.","Sistemas que se adaptan a la mayoría de referencias.","Instalaciones especializadas según dimensiones y pesos.","Sistemas optimizados combinando estantería convencional, compacta y dinámica."],"mejora":"Elija los sistemas de estanterías en función del peso, volumen y rotación de cada producto.","pts":[0,1.39,2.78,4.17,5.56]},
+        {"id":"4b.6","texto":"¿El acceso físico a las mercancías almacenadas es ágil y seguro?","ops":["Acceso muy complicado con mercancía bloqueada.","Pasillos mal diseñados que dificultan la maniobra de carretillas.","Acceso correcto según los medios de manutención utilizados.","Diseño que tiene en cuenta el tráfico de palés y la rotación.","Acceso automatizado de alta velocidad."],"mejora":"Garantice que ninguna referencia quede inaccesible detrás de otras sin criterio planificado.","pts":[0,1.39,2.78,4.17,5.56]},
+        {"id":"4b.7","texto":"¿Los productos especiales (peligrosos, refrigerados) tienen áreas dedicadas?","ops":["No se segregan ni identifican.","Se conocen pero no tienen condiciones de almacenamiento especiales.","Separación física básica sin control ambiental.","Zonas homologadas (frío, APQ) que cumplen la normativa de almacenamiento.","Instalaciones avanzadas con registro continuo de parámetros de conservación."],"mejora":"Adecue y señalice zonas exclusivas para productos químicos o perecederos conforme a normativa.","pts":[0,1.39,2.78,4.17,5.56]},
+        {"id":"4b.8","texto":"¿Cuál es la altura útil de almacenamiento aprovechada?","ops":["Menos de 3 metros.","Entre 3 y 5 metros.","Entre 5 y 7 metros.","Entre 7 y 10 metros.","Más de 10 metros."],"mejora":"Estudie el recrecido de estanterías o el uso de carretillas de mayor elevación para ganar capacidad.","pts":[0,1.39,2.78,4.17,5.56]},
+        {"id":"4b.9","texto":"¿La anchura de los pasillos está ajustada a las carretillas utilizadas?","ops":["Pasillos no ajustados con continuos golpes y maniobras difíciles.","Pasillos demasiado estrechos que comprometen la seguridad.","Anchura correcta para las carretillas actuales.","Pasillos optimizados con márgenes de seguridad normativos.","Pasillos estrechos guiados que maximizan la superficie de almacenamiento."],"mejora":"Ajuste el ancho de los pasillos a los radios de giro recomendados por el fabricante de las máquinas.","pts":[0,1.39,2.78,4.17,5.56]},
+        {"id":"4b.10","texto":"¿Se ha analizado el flujo de mercancías para rediseñar el *layout*?","ops":["No.","Parcialmente, sin método.","Sí, con método básico.","Sí, con método definido y medido.","Sí, con método integrado y mejora continua."],"mejora":"Realice un diagrama de flujos y frecuencias para ubicar los productos de más movimiento cerca de expediciones.","pts":[0,1.39,2.78,4.17,5.56]},
+        {"id":"4b.11","texto":"¿El almacén está preparado para pedidos unitarios y omnicanalidad?","ops":["No.","Parcialmente, sin método.","Sí, con método básico.","Sí, con método definido y medido.","Sí, con método integrado y mejora continua."],"mejora":"Habilite una zona de *picking* unitario ergonómica para preparar pedidos de comercio electrónico.","pts":[0,1.39,2.78,4.17,5.56]}
+      ]},
+      {"id":"4c","nombre":"Medios de manutención y maquinaria de almacén","max":22.22,"preguntas":[
+        {"id":"4c.1","texto":"¿La zona de carga y descarga cuenta con equipamiento adecuado (muelles, rampas)?","ops":["No se dispone de muelles ni rampas (carga a cota cero).","Medios precarios que no salvan bien las alturas de los camiones.","Muelles con rampas niveladoras funcionales.","Muelles diseñados según la tipología de vehículos y tráfico previsto.","Muelles equipados con abrigos de estanqueidad, guías de centrado y sistemas de bloqueo de camión."],"mejora":"Equipe los accesos con rampas niveladoras para agilizar la entrada y salida de carretillas al camión.","pts":[0,1.39,2.78,4.17,5.56]},
+        {"id":"4c.2","texto":"¿Los sistemas de estanterías son adecuados para la gama y movimiento del producto?","ops":["No.","Estanterías estándar no adaptadas a las dimensiones de las unidades de carga.","Sistemas adecuados a las características físicas del producto.","Sistemas adaptados tanto a las dimensiones como a la rotación de los artículos.","Soluciones combinadas (dinámicas, paletización móvil) perfectamente sincronizadas."],"mejora":"Combine estanterías de paletización convencional con dinámicas para referencias de gran rotación.","pts":[0,1.39,2.78,4.17,5.56]},
+        {"id":"4c.3","texto":"¿Las carretillas y transpaletas son óptimas para la operativa de la nave?","ops":["No, maquinaria obsoleta o inadecuada.","Válidas pero no optimizan altura de elevación ni ancho de pasillo.","Adecuadas pero mejorables en rendimiento energético.","Óptimas y adaptadas a las exigencias operativas del almacén.","Flota moderna, ergonómica y de máxima eficiencia energética."],"mejora":"Renueve las máquinas de manutención ajustándolas a las alturas y anchos reales de trabajo.","pts":[0,1.39,2.78,4.17,5.56]},
+        {"id":"4c.4","texto":"¿Se dispone de medios de manutención idóneos para las tareas de preparación (*picking*)?","ops":["El *picking* se realiza de forma totalmente manual sin ayudas mecánicas.","Medios precarios que penalizan la velocidad.","Carros y transpaletas manuales funcionales.","Equipos específicos de preparación de pedidos (recogepedidos en baja o media cota).","Sistemas automáticos o semiautomáticos de ayuda a la preparación."],"mejora":"Incorpore carros o recogepedidos eléctricos para multiplicar las líneas preparadas por operario.","pts":[0,1.39,2.78,4.17,5.56]}
+      ]},
+      {"id":"4d","nombre":"Criterios de gestión operativa del almacén","max":44.44,"preguntas":[
+        {"id":"4d.1","texto":"¿Se gestionan las salidas bajo criterios de rotación claros (FIFO, FEFO, LIFO)?","ops":["Sin criterio definido; se retira lo más accesible.","Criterio aplicado de forma irregular solo en pocos artículos.","FIFO aplicado en la mayoría de referencias.","Criterios estrictos por familia (FEFO en perecederos, FIFO en general).","Control estricto automatizado por fecha de caducidad y lote por el SGA."],"mejora":"Asegure la rotación FIFO o FEFO para evitar que queden artículos antiguos olvidados en el fondo de las estanterías.","pts":[0,1.39,2.78,4.17,5.56]},
+        {"id":"4d.2","texto":"¿Qué criterio rige la asignación de ubicaciones en el almacén?","ops":["Sin criterio; ubicación al libre albedrío del operario.","Ubicación fija tradicional sin optimización de huecos.","Almacenaje caótico (hueco libre) sin soporte informático.","Zonificación por rotación ABC con ubicaciones fijas de *picking*.","Gestión caótica inteligente dirigida en tiempo real por SGA."],"mejora":"Asigne ubicaciones fijas para *picking* y caóticas para reposición asistidas por sistema.","pts":[0,1.39,2.78,4.17,5.56]},
+        {"id":"4d.3","texto":"¿Las mercancías y las ubicaciones están identificadas de forma inequívoca?","ops":["No se codifican ni mercancías ni ubicaciones.","Se identifican los productos pero no las ubicaciones en estantería.","Ubicaciones y productos identificados pero sin coordinación.","Codificación coordinada en etiquetas legibles.","Identificación mediante código de barras o RFID en cada ubicación y bulto."],"mejora":"Etiquete todas las estanterías con una codificación jerárquica (calle, módulo, nivel, posición).","pts":[0,1.39,2.78,4.17,5.56]},
+        {"id":"4d.4","texto":"¿Se conoce con exactitud la ubicación de cada unidad de existencias?","ops":["No se conoce la ubicación exacta.","Conocimiento aproximado dependiente de la memoria del personal.","Ubicación conocida solo para referencias clave de alta demanda.","Ubicación registrada con precisión en fichas o sistemas básicos.","Localización exacta en tiempo real controlada por el SGA corporativo."],"mejora":"Elimine la dependencia de la memoria de los trabajadores registrando la ubicación exacta al almacenar.","pts":[0,1.39,2.78,4.17,5.56]},
+        {"id":"4d.5","texto":"¿Se dispone de procedimientos operativos documentados para el almacenamiento?","ops":["No existen procedimientos de almacenamiento.","Existen pero los operarios los desconocen o no los aplican.","Procedimientos generales sin detallar particularidades de producto.","Procedimientos claros adaptados a tipologías de producto.","Procedimientos integrados, auditados periódicamente y seguidos por toda la plantilla."],"mejora":"Documente una guía sencilla de buenas prácticas de almacenamiento y estiba de palés.","pts":[0,1.39,2.78,4.17,5.56]},
+        {"id":"4d.6","texto":"¿Cuál es el nivel de eficiencia global de la gestión del almacén?","ops":["Gestión ineficaz con costes descontrolados y quejas.","Ineficiencias notables en la operativa diaria.","Gestión aceptable con mejoras ocasionales.","Almacén eficaz que cumple sus objetivos de servicio y coste.","Excelencia operativa con programa activo de mejora continua (*lean warehousing*)."],"mejora":"Impose indicadores de costes por movimiento para detectar cuellos de botella en el almacén.","pts":[0,1.39,2.78,4.17,5.56]},
+        {"id":"4d.7","texto":"¿Se dispone de un plan de mantenimiento preventivo de estanterías y carretillas?","ops":["No.","Parcialmente, sin método.","Sí, con método básico.","Sí, con método definido y medido.","Sí, con método integrado y mejora continua."],"mejora":"Programe mantenimientos preventivos mensuales para las máquinas y revisiones estructurales de estanterías.","pts":[0,1.39,2.78,4.17,5.56]},
+        {"id":"4d.8","texto":"¿Se realizan auditorías periódicas de exactitud de ubicaciones?","ops":["No.","Parcialmente, sin método.","Sí, con método básico.","Sí, con método definido y medido.","Sí, con método integrado y mejora continua."],"mejora":"Audite semanalmente una muestra de ubicaciones para corregir discrepancias entre sistema y física.","pts":[0,1.39,2.78,4.17,5.56]}
+      ]}
+    ]},
+    {"id":"5","nombre":"Manipulación en almacén","max":150,"dims":[
+      {"id":"5a","nombre":"Planificación y organización de los procesos operativos","max":26.47,"preguntas":[
+        {"id":"5a.1","texto":"¿Se realiza una planificación de recursos en las operaciones de almacén?","ops":["Nunca.","Planificación anual agregada.","Planificación anual y mensual.","Planificación mensual y diaria de turnos.","Planificación ajustada por tramos horarios según curvas de carga de trabajo."],"mejora":"Planifique los turnos y personal de almacén con horizonte semanal y ajustes diarios.","pts":[0,1.1,2.21,3.31,4.41]},
+        {"id":"5a.2","texto":"¿Existe una asignación estructurada de los recursos a los procesos del almacén?","ops":["No existen recursos específicos destinados a almacén.","Recursos asignados sin orden ni funciones claras.","Organización en función de las urgencias de la empresa.","Personal y maquinaria asignados a procesos concretos de forma estable.","Recursos polivalentes asignados dinámicamente según la carga de cada proceso."],"mejora":"Asigne operarios responsables a cada proceso clave (entradas, preparación, expedición).","pts":[0,1.1,2.21,3.31,4.41]},
+        {"id":"5a.3","texto":"¿Se dispone de procedimientos estandarizados para todos los procesos operativos?","ops":["No.","Se trabaja por costumbre y experiencia individual.","Procedimientos escritos de los procesos principales.","Manual operativo completo de todos los procesos del almacén.","Procedimientos normalizados, certificados y auditados externamente."],"mejora":"Redacte fichas de puesto con los pasos estandarizados de cada operativa de manipulación.","pts":[0,1.1,2.21,3.31,4.41]},
+        {"id":"5a.4","texto":"¿Se miden y controlan los rendimientos de manipulación de materiales?","ops":["No se mide nada.","Evaluaciones informales del rendimiento.","Control mensual de bultos movidos y productividad por operario.","Control sistemático frente a estándares y objetivos establecidos.","Cuadro de mando en tiempo real con planes de mejora de productividad."],"mejora":"Mida semanalmente las líneas preparadas o palés movidos por hora trabajada.","pts":[0,1.1,2.21,3.31,4.41]},
+        {"id":"5a.5","texto":"¿Se dispone de un plan de formación en prevención y manejo de carretillas?","ops":["No.","Instrucciones verbales básicas sin formación formal.","Operarios con carné de carretillero pero sin reciclaje periódico.","Formación reglamentaria y auditorías periódicas de riesgos en planta.","Plan continuo de formación preventiva y cultura de seguridad cero accidentes."],"mejora":"Asegúrese de que todo operario que use carretillas cuente con la formación y carné reglamentario actualizado.","pts":[0,1.1,2.21,3.31,4.41]},
+        {"id":"5a.6","texto":"¿Se planifica la carga de trabajo diaria con objetivos de productividad por operario?","ops":["No.","Parcialmente, sin método.","Sí, con método básico.","Sí, con método definido y medido.","Sí, con método integrado y mejora continua."],"mejora":"Fije metas diarias de líneas a preparar para dimensionar adecuadamente la jornada de trabajo.","pts":[0,1.1,2.21,3.31,4.41]}
+      ]},
+      {"id":"5b","nombre":"Procesos operativos de recepción y entrada en almacén","max":44.12,"preguntas":[
+        {"id":"5b.1","texto":"¿Se conciertan con los proveedores los requisitos de entrega y descarga?","ops":["No se acuerda ningún criterio técnico.","Acuerdos básicos sobre tipo de camión o muelle.","Se pactan criterios de aceptación física y acondicionamiento de carga.","Acuerdos formales de horarios, embalajes, paletizado y aviso de expedición.","Calidad concertada total con homologación de recepción en origen."],"mejora":"Fije con sus proveedores normas de entrega sobre el tipo de palé, altura máxima y flejado.","pts":[0,1.1,2.21,3.31,4.41]},
+        {"id":"5b.2","texto":"¿Se asignan ventanas horarias de descarga (*slotting*) a los proveedores?","ops":["No; las recepciones se atienden por orden de llegada sin cita previa.","Horario general de recepción pero sin cita concertada por transportista.","Cita previa concertada solo para proveedores de gran volumen.","Asignación manual de fecha y hora para todas las descargas.","Sistema automatizado de gestión de citas en muelles (*dock scheduling*)."],"mejora":"Establezca un calendario de citas horarias de descarga para evitar colas de camiones en muelles.","pts":[0,1.1,2.21,3.31,4.41]},
+        {"id":"5b.3","texto":"¿La mercancía llega paletizada según los estándares de su almacén?","ops":["Llega a granel y exige manipulación manual intensiva.","Parte a granel y parte paletizada de forma heterogénea.","Toda paletizada pero en formatos diversos no normalizados.","Mercancía paletizada en europalé estándar homogéneo.","Paletización estandarizada y acordada en altura, peso y sobrepaso."],"mejora":"Exija a los proveedores la entrega paletizada en formatos compatibles con sus estanterías.","pts":[0,1.1,2.21,3.31,4.41]},
+        {"id":"5b.4","texto":"¿Qué documentación soporta el proceso de recepción física?","ops":["Ninguna documentación previa.","Solo el albarán en papel que aporta el transportista.","Albarán cotejado con la orden de pedido interna.","Cotejo de pedido, albarán y aviso previo de expedición (*ASN*).","Recepción automatizada vinculada a orden de compra digital."],"mejora":"No acepte ninguna recepción que no cuente con su correspondiente orden de pedido en sistema.","pts":[0,1.1,2.21,3.31,4.41]},
+        {"id":"5b.5","texto":"¿Se dispone de los datos maestros físicos de los productos en recepción?","ops":["No se dispone de datos de peso ni medidas.","Datos básicos de unidades por bulto.","Datos de configuración de palé y peso unitario.","Ficha logística completa en el sistema al dar de alta el artículo.","Datos maestros actualizados y validados con notificación de cambios por el proveedor."],"mejora":"Registre en el maestro de artículos el peso, dimensiones y unidades por caja de cada producto.","pts":[0,1.1,2.21,3.31,4.41]},
+        {"id":"5b.6","texto":"¿Cómo se identifica la mercancía que entra en el almacén?","ops":["No se realiza ninguna identificación formal.","Identificación visual basada en la experiencia del personal.","Lectura visual de etiquetas de proveedor.","Lectura óptica de códigos de barras (EAN/GS1).","Captura automática mediante radiofrecuencia (RFID) o visión artificial."],"mejora":"Etiquete con códigos de barras todos los bultos o palés recibidos que carezcan de identificación estándar.","pts":[0,1.1,2.21,3.31,4.41]},
+        {"id":"5b.7","texto":"¿Cómo y cuándo se registra la recepción administrativa del material?","ops":["Se envía el albarán en papel a administración a final de semana.","Se graba en las oficinas de administración a lo largo de la jornada.","Registro en almacén tras comprobar físicamente la mercancía.","Grabación en tiempo real en muelle mediante terminales de radiofrecuencia.","Integración electrónica automática inmediata de entrada de mercancía."],"mejora":"Registre la entrada en el sistema en el mismo muelle de descarga para que el stock esté disponible al instante.","pts":[0,1.1,2.21,3.31,4.41]},
+        {"id":"5b.8","texto":"¿El operario recibe la orden de la ubicación exacta a la que debe trasladar la carga?","ops":["No; la deposita en el primer hueco que encuentra libre.","Según su propio criterio o costumbre.","El almacén está ordenado por zonas fijas pero sin asignación de posición.","Se le asigna una ubicación manualmente en una orden en papel.","El SGA indica automáticamente la ubicación óptima y valida su colocación."],"mejora":"Implante un sistema en el que el operario reciba la instrucción precisa de en qué hueco depositar la carga.","pts":[0,1.1,2.21,3.31,4.41]},
+        {"id":"5b.9","texto":"¿Se confirma la ubicación de la mercancía depositada en estantería?","ops":["No se confirma.","Comprobaciones aleatorias a posteriori.","Confirmación manual anotada en listas de trabajo.","Confirmación manual en el terminal del sistema de gestión.","Confirmación en tiempo real mediante escaneo de la etiqueta de la estantería."],"mejora":"Obligue a escanear el código de la ubicación para validar que el palé se ha colocado en el sitio correcto.","pts":[0,1.1,2.21,3.31,4.41]},
+        {"id":"5b.10","texto":"¿Existe un circuito operativo definido para la recepción de devoluciones?","ops":["No; se acumulan sin clasificar en una esquina del almacén.","Tratamiento informal según el tiempo disponible.","Procedimiento coordinado entre almacén y el departamento comercial.","Circuito reglado con inspección técnica, destino comercial y abono administrativo.","Procedimiento integrado con trazabilidad de RMA y reubicación ágil."],"mejora":"Habilite una zona específica para devoluciones y defina un protocolo diario de inspección y triaje.","pts":[0,1.1,2.21,3.31,4.41]}
+      ]},
+      {"id":"5c","nombre":"Procesos operativos de preparación (*picking*) y salida","max":44.12,"preguntas":[
+        {"id":"5c.1","texto":"¿Cómo se transmiten los pedidos de clientes al personal del almacén?","ops":["Pedidos manuscritos o verbales entregados directamente en mano.","Pedidos transcritos manualmente en un documento en papel.","Departamento específico que introduce los pedidos y emite órdenes de trabajo.","Integración electrónica mediante EDI o pedidos descargados del ERP.","Pedidos volcados directamente desde la web o portal B2B al sistema de almacén."],"mejora":"Elimine los pedidos verbales o en papel informal; toda orden debe generarse desde el sistema.","pts":[0,1.1,2.21,3.31,4.41]},
+        {"id":"5c.2","texto":"¿Qué soporte físico o digital guía al operario durante la preparación?","ops":["El pedido comercial original anotado en papel.","Albarán de preparación impreso.","Etiquetas adhesivas secuenciadas de preparación.","Terminal portátil de radiofrecuencia que guía el recorrido.","Sistemas de voz (*pick-by-voice*) o pantallas luminosas (*pick-to-light*)."],"mejora":"Incorpore terminales de radiofrecuencia para guiar la preparación y evitar errores de lectura.","pts":[0,1.1,2.21,3.31,4.41]},
+        {"id":"5c.3","texto":"¿Los operarios disponen de carros o elementos de transporte para preparar pedidos?","ops":["No; preparación totalmente a pie cargando bultos a mano.","Carros manuales rudimentarios para preparar un único pedido cada vez.","Transpaletas manuales para mover cargas pesadas.","Transpaletas eléctricas o carros multilínea bien acondicionados.","Equipos específicos de preparación de pedidos a baja y media cota."],"mejora":"Dote a los preparadores de carros ergonómicos que permitan agrupar varios pedidos en un solo viaje.","pts":[0,1.1,2.21,3.31,4.41]},
+        {"id":"5c.4","texto":"¿Cómo se asignan y priorizan las órdenes de preparación a los operarios?","ops":["Sin criterio; cada operario coge el albarán que prefiere de la bandeja.","Asignación manual según la proximidad de la salida del camión.","El jefe de almacén asigna pedidos considerando el transporte y urgencia.","Asignación estructurada atendiendo al horario de corte y ventana de entrega.","Algoritmos del SGA que asignan pedidos automáticamente según carga y recorrido."],"mejora":"Priorice la preparación de pedidos en función de las horas de salida acordadas con las agencias de transporte.","pts":[0,1.1,2.21,3.31,4.41]},
+        {"id":"5c.5","texto":"¿Se adaptan las técnicas de *picking* a la tipología de los pedidos?","ops":["Siempre se prepara pedido a pedido de forma individual.","El responsable cambia la sistemática solo en campañas de saturación.","Criterios empíricos según el volumen de líneas.","Preparación por lotes (*batch picking*) o por zonas diferenciadas.","Sistemas avanzados de preparación por oleadas (*wave picking*) según rutas."],"mejora":"Agrupe pedidos de pocas líneas para prepararlos de forma conjunta (*batch picking*) y reducir paseos.","pts":[0,1.1,2.21,3.31,4.41]},
+        {"id":"5c.6","texto":"¿Se dispone de un sistema ágil de reposición de los huecos de *picking*?","ops":["No; cuando se agota una referencia el preparador debe buscarla o esperar.","Reposición reactiva cuando el hueco ya está vacío.","El operario avisa al carretillero para que baje stock de reserva.","SGA que genera órdenes de reposición antes de la rotura del hueco.","Reposición preventiva automática basada en las órdenes de pedido lanzadas."],"mejora":"Programe la reposición de los huecos de *picking* a primera hora antes de iniciar la preparación de pedidos.","pts":[0,1.1,2.21,3.31,4.41]},
+        {"id":"5c.7","texto":"¿Cuál es el nivel de exactitud y ausencia de errores en los pedidos preparados?","ops":["Errores muy frecuentes que originan reclamaciones continuas de clientes.","Errores habituales en referencias o cantidades servidas.","Nivel aceptable aunque con incidencias periódicas.","Muy baja tasa de fallos en preparación.","Preparación prácticamente perfecta con exactitud de líneas superior al 99,5 %."],"mejora":"Analice semanalmente las causas de los errores de preparación (confusión de referencia, cantidad errónea).","pts":[0,1.1,2.21,3.31,4.41]},
+        {"id":"5c.8","texto":"¿Qué tecnología de apoyo se emplea en la preparación de pedidos?","ops":["Ninguna; proceso puramente visual y manual.","Lectores manuales de código de barras para chequear bultos.","Terminales de radiofrecuencia conectados en tiempo real.","Sistemas de guiado por voz (*voice picking*) o luces en balda (*pick-to-light*).","Sistemas automáticos de preparación o carruseles horizontales/verticales."],"mejora":"Valide cada artículo preparado mediante lectura óptica de código de barras para eliminar el error humano.","pts":[0,1.1,2.21,3.31,4.41]},
+        {"id":"5c.9","texto":"¿Se realiza un control de verificación de los pedidos antes de expedir?","ops":["No se realiza ningún control; se embala y envía directamente.","Muestreo aleatorio visual muy superficial.","Control manual y cotejo del 100 % de los albaranes antes de precintar.","Control por pesaje automático o escaneo de bultos expedidos.","Verificación desatendida mediante arcos de lectura RFID o básculas dinámicas."],"mejora":"Instale básculas de control de peso por bulto para detectar discrepancias frente al peso teórico del pedido.","pts":[0,1.1,2.21,3.31,4.41]},
+        {"id":"5c.10","texto":"¿Se aplican técnicas de preparación avanzadas por zonas o por oleadas?","ops":["No.","Parcialmente, sin método.","Sí, con método básico.","Sí, con método definido y medido.","Sí, con método integrado y mejora continua."],"mejora":"Divida la preparación en zonas especializadas si el almacén cuenta con productos de diferentes características.","pts":[0,1.1,2.21,3.31,4.41]}
+      ]},
+      {"id":"5d","nombre":"Tecnología, productividad y costes de manipulación","max":35.29,"preguntas":[
+        {"id":"5d.1","texto":"¿Se dispone de un sistema de gestión de almacenes (SGA / WMS)?","ops":["No se dispone de software específico para almacén.","Módulo básico de control de stock dentro del ERP general.","SGA independiente no conectado con el software corporativo.","SGA especializado conectado e integrado con el ERP.","SGA avanzado integrado con ERP, agencias de transporte y sistemas automáticos."],"mejora":"Evalúe la implantación de un SGA adaptado al tamaño de su empresa para guiar todas las operaciones.","pts":[0,1.1,2.21,3.31,4.41]},
+        {"id":"5d.2","texto":"¿Existen sistemas semiautomatizados o automáticos de preparación de pedidos?","ops":["No.","Terminales de radiofrecuencia convencionales.","Sistemas de voz (*pick-by-voice*).","Sistemas *pick-to-light* o *put-to-light*.","Sistemas completamente automáticos (miniloads, clasificadores automáticos, AGVs)."],"mejora":"Incorpore tecnologías *pick-to-light* o terminales de muñeca con anillo lector para liberar las manos del operario.","pts":[0,1.1,2.21,3.31,4.41]},
+        {"id":"5d.3","texto":"¿Se conoce la productividad individual o por equipo en líneas de pedido por hora?","ops":["No se mide la productividad.","Se tiene una idea subjetiva sin datos objetivos.","Cálculo global aproximado a mes vencido.","Conocimiento preciso del número de líneas preparadas por operario y hora.","Productividad monitorizada en tiempo real con estándares de ingeniería de métodos."],"mejora":"Establezca un indicador de líneas preparadas por hora y comparta los resultados con el equipo.","pts":[0,1.1,2.21,3.31,4.41]},
+        {"id":"5d.4","texto":"¿Se conoce el coste real de manipulación por unidad o por palé movido?","ops":["Se desconoce por completo.","Se conoce solo el coste total de nóminas del almacén.","Estimación aproximada del coste unitario de manipulación.","Coste de manipulación por unidad calculado con razonable precisión.","Coste de manipulación imputado al céntimo por línea, cliente y tipología de pedido."],"mejora":"Calcule el coste de manipulación dividiendo los costes del almacén entre las unidades expedidas al mes.","pts":[0,1.1,2.21,3.31,4.41]},
+        {"id":"5d.5","texto":"¿Se conoce el tiempo y coste medio de preparación de un pedido?","ops":["Se desconoce totalmente.","Se conoce de forma orientativa.","Se cuenta con estimaciones empíricas.","Tiempo y coste medio de preparación analizados con datos fiables.","Monitorización continua del coste del pedido por canal comercial."],"mejora":"Determine el tiempo medio que cuesta preparar un pedido para presupuestar los costes operativos.","pts":[0,1.1,2.21,3.31,4.41]},
+        {"id":"5d.6","texto":"¿Se conoce con precisión el valor del stock almacenado y su coste de posesión?","ops":["Se desconoce totalmente.","Solo se conoce el valor global de compra sin costes financieros.","Se dispone de estimaciones del coste financiero del inventario.","Conocimiento exacto del valor del stock y sus costes asociados de almacenamiento.","Coste de posesión calculado al detalle integrando mermas, seguros y coste de capital."],"mejora":"Calcule el coste de posesión del stock incorporando el coste de oportunidad financiero y los seguros.","pts":[0,1.1,2.21,3.31,4.41]},
+        {"id":"5d.7","texto":"¿Se dispone de captura automática de datos (lectores, RFID, visión)?","ops":["No.","Parcialmente, sin método.","Sí, con método básico.","Sí, con método definido y medido.","Sí, con método integrado y mejora continua."],"mejora":"Generalice el escaneo de códigos en todas las etapas para evitar introducir datos con teclado.","pts":[0,1.1,2.21,3.31,4.41]},
+        {"id":"5d.8","texto":"¿Se emplean medidas ergonómicas para evitar sobreesfuerzos en la manipulación?","ops":["No.","Parcialmente, sin método.","Sí, con método básico.","Sí, con método definido y medido.","Sí, con método integrado y mejora continua."],"mejora":"Ajuste las alturas de las baldas de preparación para que los operarios no tengan que agacharse ni estirarse en exceso.","pts":[0,1.1,2.21,3.31,4.41]}
+      ]}
+    ]},
+    {"id":"6","nombre":"Transporte de distribución","max":150,"dims":[
+      {"id":"6a","nombre":"Planificación y organización del transporte","max":50,"preguntas":[
+        {"id":"6a.1","texto":"¿Se planifican con antelación las necesidades y capacidades de transporte?","ops":["Nunca; se contrata sobre la marcha según se producen las salidas.","Planificación anual agregada.","Planificación de capacidades con revisión mensual.","Planificación diaria y asignación anticipada de rutas.","Planificación horaria sincronizada con los muelles de carga."],"mejora":"Reserve capacidades de transporte con antelación para asegurar disponibilidad de camiones y tarifas competitivas.","pts":[0,1.56,3.13,4.69,6.25]},
+        {"id":"6a.2","texto":"¿Qué modelo de flota de transporte utiliza la empresa?","ops":["Flota propia sin control de ocupación ni costes.","Autónomos contratados sin exclusividad ni contratos marco.","Agencias de transporte convencionales de paquetería o carga completa.","Flota vinculada o contratos estables de transporte dedicados.","Modelo mixto optimizado según distancia, volumen y destino."],"mejora":"Analice periódicamente si le conviene flota propia, autónomos dedicados o agencias según su tipología de envíos.","pts":[0,1.56,3.13,4.69,6.25]},
+        {"id":"6a.3","texto":"¿Existen procedimientos documentados para la operativa de transporte y entrega?","ops":["No existen procedimientos de transporte.","Se confía en la experiencia y profesionalidad del transportista.","Protocolo básico de carga y entrega en mano.","Procedimientos escritos que cubren carga, estiba, transporte y entrega con firma.","Protocolos auditados y certificados por estándares de calidad."],"mejora":"Defina por escrito las instrucciones de entrega que deben cumplir los conductores ante el cliente final.","pts":[0,1.56,3.13,4.69,6.25]},
+        {"id":"6a.4","texto":"¿Se analiza la tipología óptima de vehículo para cada tipo de ruta y mercancía?","ops":["No; se usa el mismo tipo de vehículo sin distinción.","Solo se mira el precio por viaje que cobra el transportista.","Se tienen en cuenta criterios de capacidad y seguridad de la carga.","Selección considerando volumen, peso, accesibilidad urbana y flexibilidad.","Optimización de la flota considerando además eficiencia energética y emisiones."],"mejora":"Seleccione los vehículos en función de las restricciones de descarga y acceso a los centros urbanos.","pts":[0,1.56,3.13,4.69,6.25]},
+        {"id":"6a.5","texto":"¿Se involucra a los transportistas en los objetivos de servicio acordados con el cliente?","ops":["No; relación puramente transaccional.","Solo se exige cumplimiento formal a los chóferes propios.","Se trasladan los requisitos a todas las agencias contratadas.","Se fijan acuerdos de nivel de servicio (SLA) con indicadores evaluables.","Acuerdos de colaboración estrecha con incentivos por puntualidad y servicio excelente."],"mejora":"Establezca un acuerdo de nivel de servicio (SLA) con sus agencias de transporte con penalizaciones y bonificaciones.","pts":[0,1.56,3.13,4.69,6.25]},
+        {"id":"6a.6","texto":"¿Se optimizan las rutas de reparto bajo criterios conjuntos de coste, plazo y emisiones?","ops":["No.","Parcialmente, sin método.","Sí, con método básico.","Sí, con método definido y medido.","Sí, con método integrado y mejora continua."],"mejora":"Utilice herramientas de optimización de rutas para reducir kilómetros en vacío y consumo de combustible.","pts":[0,1.56,3.13,4.69,6.25]},
+        {"id":"6a.7","texto":"¿Se ajusta la flota a las normativas de tiempos de conducción y zonas de bajas emisiones?","ops":["No.","Parcialmente, sin método.","Sí, con método básico.","Sí, con método definido y medido.","Sí, con método integrado y mejora continua."],"mejora":"Asegúrese de que su flota o la de sus proveedores cumple la normativa ambiental de acceso a ciudades.","pts":[0,1.56,3.13,4.69,6.25]},
+        {"id":"6a.8","texto":"¿Se planifica la última milla considerando ventanas horarias y restricciones de entrega?","ops":["No.","Parcialmente, sin método.","Sí, con método básico.","Sí, con método definido y medido.","Sí, con método integrado y mejora continua."],"mejora":"Planifique las entregas agrupándolas por ventanas horarias y zonas geográficas densas.","pts":[0,1.56,3.13,4.69,6.25]}
+      ]},
+      {"id":"6b","nombre":"Funcionamiento y seguimiento del proceso de transporte","max":68.75,"preguntas":[
+        {"id":"6b.1","texto":"¿Se recogen de forma formal los requisitos de entrega acordados con cada cliente?","ops":["Desconocimiento de los requisitos de entrega del cliente.","Conocimiento verbal de condiciones básicas sin documentar.","Requisitos recogidos informalmente en notas del cliente.","Ficha logística formal que especifica horarios, muelles y necesidades del cliente.","Ficha logística integrada y transmitida automáticamente al transportista."],"mejora":"Elabore una ficha logística por cliente donde consten sus horarios de recepción y restricciones de acceso.","pts":[0,1.56,3.13,4.69,6.25]},
+        {"id":"6b.2","texto":"¿El transportista conoce con antelación las condiciones de entrega del cliente?","ops":["No se le traslada ninguna instrucción específica.","Se le avisa únicamente en casos de problemas graves.","Se le trasladan notas verbales o anotaciones en el albarán.","Se le entrega la ficha de requisitos junto con la orden de transporte.","El conductor recibe las instrucciones de entrega detalladas en su dispositivo móvil."],"mejora":"Transmita a la agencia de transportes los horarios y requisitos de descarga en el momento de asignar el porte.","pts":[0,1.56,3.13,4.69,6.25]},
+        {"id":"6b.3","texto":"¿Qué tecnología se utiliza para intercambiar datos con los transportistas?","ops":["Teléfono y llamadas de voz.","Correo electrónico con ficheros adjuntos.","Portales web de agencias de transporte.","Integración electrónica de expediciones (EDI o web services).","Plataforma integrada con seguimiento GPS y confirmación digital en tiempo real."],"mejora":"Integre su sistema con la plataforma de sus transportistas para generar etiquetas de envío y albaranes automáticamente.","pts":[0,1.56,3.13,4.69,6.25]},
+        {"id":"6b.4","texto":"¿Dispone de flexibilidad para distribuir cualquier volumen de pedido (desde unitario a palé)?","ops":["Muy reducida; solo se admiten pedidos en grandes lotes.","Flexibilidad escasa que origina frecuentes negativas al cliente.","Capacidad para servir paquetería y palés con distintas agencias.","Alta flexibilidad que permite atender pedidos pequeños y grandes sin perder eficiencia.","Flexibilidad total con servicio ágil capilar y distribución multiformato."],"mejora":"Contrate acuerdos con agencias especializadas en paquetería y paletería para responder a cualquier tamaño de pedido.","pts":[0,1.56,3.13,4.69,6.25]},
+        {"id":"6b.5","texto":"¿Cuál es la frecuencia y cadencia habitual de distribución a sus clientes?","ops":["Entregas mensuales o irregulares.","Entregas quincenales o semanales.","Varias entregas programadas por semana.","Servicio diario de entrega.","Múltiples entregas al día en función de las necesidades del cliente."],"mejora":"Aumente la cadencia de entregas en clientes estratégicos mediante rutas fijas regulares.","pts":[0,1.56,3.13,4.69,6.25]},
+        {"id":"6b.6","texto":"¿Cuál es la rapidez de reacción y resolución ante incidencias en la carretera?","ops":["Reacción muy lenta; nos enteramos por las quejas del cliente.","Reacción lenta con escasa capacidad de respuesta.","Respuesta aceptable en el transcurso del día.","Respuesta rápida y proactiva buscando alternativas.","Gestión inmediata con aviso anticipado al cliente y reprogramación en tiempo real."],"mejora":"Exija a sus agencias la notificación de cualquier incidencia en ruta en un plazo máximo de dos horas.","pts":[0,1.56,3.13,4.69,6.25]},
+        {"id":"6b.7","texto":"¿Se utiliza un sistema eficiente de planificación y optimización de rutas?","ops":["No se planifican rutas; el conductor decide el orden sobre la marcha.","Planificación manual basada en la experiencia de los chóferes.","Planificación informática básica agrupando por códigos postales.","Software de optimización de rutas considerando tráfico y ventanas horarias.","Optimización dinámica de rutas en tiempo real asistida por GPS y telemetría."],"mejora":"Adopte un software de optimización de rutas para reducir los costes por kilómetro y equilibrar las cargas.","pts":[0,1.56,3.13,4.69,6.25]},
+        {"id":"6b.8","texto":"¿Cómo se obtiene la constancia o justificante de la mercancía entregada (*POD*)?","ops":["El transportista no informa; se presupone entregada si no hay queja.","Información verbal o telefónica del transportista.","Albarán firmado devuelto en papel días después de la entrega.","Albarán firmado escaneado accesible en el portal del transportista.","Comprobante de entrega digital (*e-POD*) firmado en dispositivo móvil y recibido al instante."],"mejora":"Implante el albarán digital de entrega con firma en terminal móvil (*electronic Proof of Delivery*).","pts":[0,1.56,3.13,4.69,6.25]},
+        {"id":"6b.9","texto":"¿En qué plazo se dispone de la confirmación formal de la entrega?","ops":["No se dispone de confirmación formal.","Solo cuando llega la factura del transporte a final de mes.","Semanalmente tras recibir los documentos en papel.","Al día siguiente laborable tras la entrega.","En tiempo real o en un plazo inferior a dos horas tras la firma del cliente."],"mejora":"Reduzca a menos de 24 horas el tiempo de disponibilidad del justificante de entrega para poder facturar sin dilaciones.","pts":[0,1.56,3.13,4.69,6.25]},
+        {"id":"6b.10","texto":"¿Existe un sistema eficiente de seguimiento de la mercancía durante el transporte?","ops":["No existe ningún seguimiento del envío.","Llamadas telefónicas al conductor para consultar por dónde va.","Seguimiento básico a través de la web de la agencia mediante código de envío.","Localización en tiempo real del vehículo o del envío.","Torre de control logística con visibilidad integral y alertas automáticas de desviación."],"mejora":"Proporcione a los clientes un enlace de seguimiento web para consultar en todo momento la situación de su expedición.","pts":[0,1.56,3.13,4.69,6.25]},
+        {"id":"6b.11","texto":"¿Se ofrece al cliente final visibilidad del estado de su envío en tiempo real?","ops":["No.","Parcialmente, sin método.","Sí, con método básico.","Sí, con método definido y medido.","Sí, con método integrado y mejora continua."],"mejora":"Envíe notificaciones automáticas por correo electrónico o SMS con la hora estimada de entrega (*ETA*).","pts":[0,1.56,3.13,4.69,6.25]}
+      ]},
+      {"id":"6c","nombre":"Control y costes del transporte","max":31.25,"preguntas":[
+        {"id":"6c.1","texto":"¿Cuál es el nivel de fiabilidad y puntualidad en las entregas a clientes?","ops":["Fiabilidad muy deficiente con retrasos crónicos.","Poco fiable; frecuentes entregas fuera de plazo.","Fiabilidad moderada pero mejorable.","Alta fiabilidad y cumplimiento de los plazos comprometidos.","Puntualidad total con cumplimiento de fechas superior al 98 %."],"mejora":"Mida el porcentaje de entregas realizadas dentro del plazo comprometido con el cliente.","pts":[0,1.56,3.13,4.69,6.25]},
+        {"id":"6c.2","texto":"¿Cuál es la tasa de roturas o deterioros de producto durante el transporte?","ops":["Elevada tasa de daños por mala estiba, golpes o embalaje inadecuado.","Deterioros frecuentes que generan abonos y reclamaciones.","Nivel normal de siniestralidad dentro de lo previsible.","Muy baja incidencia de daños en el transporte.","Cero incidencias gracias a embalajes validados y correcta sujeción de cargas."],"mejora":"Revise la resistencia del embalaje de transporte y forme a los operarios en las pautas de estiba segura.","pts":[0,1.56,3.13,4.69,6.25]},
+        {"id":"6c.3","texto":"¿Se conoce con exactitud el coste del transporte por cliente y por envío?","ops":["Se desconoce totalmente el desglose de costes.","Solo se conoce el importe global de la factura mensual del transporte.","Estimación aproximada del coste de transporte sobre ventas.","Coste de transporte imputado con precisión por bulto, palé o envío.","Conocimiento exacto del coste de transporte por cliente, producto y margen comercial."],"mejora":"Impute el coste de transporte a cada pedido para conocer la rentabilidad neta por cliente.","pts":[0,1.56,3.13,4.69,6.25]},
+        {"id":"6c.4","texto":"¿Cuál es el grado de aprovechamiento de la capacidad de carga de los vehículos?","ops":["Vehículos que viajan casi vacíos sin control de ocupación.","Aprovechamiento bajo con muchos retornos en vacío.","Ocupación media razonable pero con margen de mejora.","Transporte a plena capacidad de carga en la mayoría de rutas.","Capacidad maximizada con aprovechamiento de retornos mediante cargas colaborativas."],"mejora":"Consolide envíos para maximizar el coeficiente de llenado del vehículo antes de su salida.","pts":[0,1.56,3.13,4.69,6.25]},
+        {"id":"6c.5","texto":"¿Se dispone de un sistema de gestión de transporte (TMS) integrado?","ops":["No.","Parcialmente, sin método.","Sí, con método básico.","Sí, con método definido y medido.","Sí, con método integrado y mejora continua."],"mejora":"Implante un sistema TMS para automatizar la asignación de transportistas, el control de tarifas y la liquidación de facturas.","pts":[0,1.56,3.13,4.69,6.25]}
+      ]}
+    ]},
+    {"id":"7","nombre":"Logística inversa","max":100,"dims":[
+      {"id":"7a","nombre":"Organización y política de logística inversa","max":13.33,"preguntas":[
+        {"id":"7a.1","texto":"¿Existe una política definida de devoluciones y logística inversa en la empresa?","ops":["No existe ninguna política escrita.","Las devoluciones se gestionan caso a caso de forma improvisada.","Existe una política comercial básica de devoluciones.","Política formal documentada para devoluciones y retornos de envases.","Política integral de economía circular alineada con la estrategia de la compañía."],"mejora":"Redacte una política clara de condiciones de devolución que conozcan clientes y comerciales.","pts":[0,1.67,3.33,5,6.67]},
+        {"id":"7a.2","texto":"¿Hay un responsable formalmente asignado a la gestión de la logística inversa?","ops":["No hay nadie asignado.","La responsabilidad se reparte informalmente entre ventas y almacén.","Responsable de almacén que atiende retornos cuando tiene tiempo.","Responsable asignado con funciones y recursos delimitados.","Equipo multidisciplinar coordinado entre operaciones, calidad y atención al cliente."],"mejora":"Designe un responsable para coordinar la gestión de retornos y evitar el colapso del almacén.","pts":[0,1.67,3.33,5,6.67]}
+      ]},
+      {"id":"7b","nombre":"Gestión operativa de devoluciones de clientes","max":26.67,"preguntas":[
+        {"id":"7b.1","texto":"¿Cómo se autorizan y registran las devoluciones de producto?","ops":["No se autorizan previamente ni se registran; llegan por sorpresa.","Se anotan a mano en un cuaderno al ser descargadas.","Autorización previa verbal y registro en albarán de entrada.","Autorización previa numerada (RMA) y registro informático obligatorio.","Sistema integrado de devoluciones (RMA) conectado con portal de cliente y ERP."],"mejora":"Exija un código de autorización de devolución (RMA) antes de aceptar cualquier retorno en sus muelles.","pts":[0,1.67,3.33,5,6.67]},
+        {"id":"7b.2","texto":"¿Se clasifican las devoluciones según su causa u origen?","ops":["No se clasifican; se tratan todas igual.","Solo se investigan las de importes muy elevados.","Se registran los motivos pero no se analizan estadísticamente.","Clasificación periódica y análisis sistemático de causas raíz.","Análisis causal con planes de acción correctiva en compras, calidad o producción."],"mejora":"Codifique el motivo de cada devolución (error en pedido, mercancía dañada, defecto de calidad) para atajar el problema en origen.","pts":[0,1.67,3.33,5,6.67]},
+        {"id":"7b.3","texto":"¿Cuál es el plazo medio de resolución y cierre de una devolución?","ops":["Plazo indefinido; se acumulan meses en el almacén.","Más de 30 días para resolver la incidencia.","Entre 15 y 30 días laborables.","Entre 7 y 15 días laborables.","Menos de 7 días con notificación inmediata y abono automático al cliente."],"mejora":"Fije un plazo máximo de una semana para inspeccionar una devolución y emitir el abono al cliente.","pts":[0,1.67,3.33,5,6.67]},
+        {"id":"7b.4","texto":"¿Se gestionan los retornos con la misma trazabilidad y rigor que las entregas?","ops":["No.","Parcialmente, sin método.","Sí, con método básico.","Sí, con método definido y medido.","Sí, con método integrado y mejora continua."],"mejora":"Aplique código de barras y registro en sistema a toda mercancía que retorne al almacén.","pts":[0,1.67,3.33,5,6.67]}
+      ]},
+      {"id":"7c","nombre":"Recuperación, reacondicionamiento y reutilización","max":20,"preguntas":[
+        {"id":"7c.1","texto":"¿Qué destino o tratamiento se aplica al producto devuelto?","ops":["Se desecha directamente como residuo sin inspeccionar.","Se queda almacenado indefinidamente sin decisión comercial.","Se reincorpora al stock de venta solo lo visiblemente intacto.","Proceso reglado de triaje: reacondicionado, venta secundaria, reciclaje o descarte.","Protocolo estandarizado para maximizar el valor económico recuperado del producto."],"mejora":"Defina pautas claras para reacondicionar y volver a poner a la venta productos devueltos en buen estado.","pts":[0,1.67,3.33,5,6.67]},
+        {"id":"7c.2","texto":"¿Se gestionan los embalajes y palés reutilizables mediante circuitos de retorno?","ops":["No se recuperan los palés ni cajas; se dan por perdidos.","Se recogen de forma esporádica sin control de unidades.","Se recuperan los palés principales pero sin conciliación formal.","Circuito de retorno con control estricto de saldos de palés con clientes y agencias.","Gestión con *pool* de palés reutilizables integrado en la cadena de distribución."],"mejora":"Lleve una cuenta de saldos de palés con transportistas y clientes para no asumir pérdidas de embalaje.","pts":[0,1.67,3.33,5,6.67]},
+        {"id":"7c.3","texto":"¿Se optimiza el transporte de retorno aprovechando los viajes de distribución?","ops":["No.","Parcialmente, sin método.","Sí, con método básico.","Sí, con método definido y medido.","Sí, con método integrado y mejora continua."],"mejora":"Aproveche el camión que entrega un pedido para recoger las devoluciones o palés vacíos de ese mismo cliente.","pts":[0,1.67,3.33,5,6.67]}
+      ]},
+      {"id":"7d","nombre":"Gestión ambiental y tratamiento de residuos","max":20,"preguntas":[
+        {"id":"7d.1","texto":"¿Cómo se gestionan los residuos generados en las instalaciones logísticas?","ops":["Se mezclan todos los residuos en un contenedor común.","Separación básica informal de cartón o plástico.","Segregación en origen y retirada certificada por gestores autorizados.","Gestión documentada de residuos con indicadores de pesaje y reciclaje.","Plan de residuo cero y economía circular con objetivos de reducción continua."],"mejora":"Instale contenedores diferenciados y prensas de cartón y plástico para reducir costes de gestión de residuos.","pts":[0,1.67,3.33,5,6.67]},
+        {"id":"7d.2","texto":"¿Se cumplen las obligaciones legales de Responsabilidad Ampliada del Productor (RAP)?","ops":["Se desconocen las obligaciones legales que aplican a la empresa.","Se conocen pero no se aplican formalmente.","Cumplimiento parcial ante requerimientos puntuales.","Cumplimiento completo de las declaraciones y tasas ambientales de envases y residuos.","Cumplimiento estricto con auditorías de ecodiseño y reducción de materiales."],"mejora":"Asegúrese de estar al día en la declaración y pago de puntos verdes y normativas de envases comerciales.","pts":[0,1.67,3.33,5,6.67]},
+        {"id":"7d.3","texto":"¿Se aplican criterios de ecodiseño y circularidad en los embalajes de envío?","ops":["No.","Parcialmente, sin método.","Sí, con método básico.","Sí, con método definido y medido.","Sí, con método integrado y mejora continua."],"mejora":"Sustituya los rellenos de plástico por materiales reciclados o cartón triturado reutilizado.","pts":[0,1.67,3.33,5,6.67]}
+      ]},
+      {"id":"7e","nombre":"Control y costes de la logística inversa","max":20,"preguntas":[
+        {"id":"7e.1","texto":"¿Se miden indicadores específicos del proceso de devoluciones?","ops":["No se mide nada.","Solo se contabiliza el número total de devoluciones recibidas.","Control de tasa de devolución y tipología de motivos.","Control exhaustivo de tasa de retorno, costes de transporte y valor recuperado.","Cuadro de mando integral de logística inversa con objetivos anuales de reducción."],"mejora":"Mida mensualmente la tasa de devolución (porcentaje de pedidos devueltos frente a pedidos servidos).","pts":[0,1.67,3.33,5,6.67]},
+        {"id":"7e.2","texto":"¿Se conoce el coste total real que suponen las devoluciones para la empresa?","ops":["Se desconoce totalmente.","Solo se tiene en cuenta el coste del transporte de recogida.","Se conocen los costes directos de portes y reposición de producto.","Conocimiento detallado de costes de transporte, manipulación, almacenaje y depreciación.","Coste total de la logística inversa calculado al detalle e imputado por cliente y causa."],"mejora":"Calcule el coste integral de una devolución sumando recogida, inspección y pérdida de valor del producto.","pts":[0,1.67,3.33,5,6.67]},
+        {"id":"7e.3","texto":"¿Se fijan objetivos anuales para reducir la tasa de devoluciones?","ops":["No.","Parcialmente, sin método.","Sí, con método básico.","Sí, con método definido y medido.","Sí, con método integrado y mejora continua."],"mejora":"Establezca con ventas un objetivo anual de reducción del porcentaje de producto devuelto.","pts":[0,1.67,3.33,5,6.67]}
+      ]}
+    ]},
+    {"id":"8","nombre":"Experiencia del cliente","max":100,"dims":[
+      {"id":"8a","nombre":"Estrategia y cultura de servicio al cliente","max":34.78,"preguntas":[
+        {"id":"8a.1","texto":"¿Se establecen metas estratégicas de servicio logístico orientado al cliente?","ops":["No se fijan objetivos formales de servicio.","Metas genéricas centradas exclusivamente en evitar quejas graves.","Objetivos definidos de calidad de entrega y disponibilidad de producto.","Objetivos medibles de nivel de servicio (*fill rate*, puntualidad, cero daños).","Estrategia centrada en la experiencia del cliente con metas compartidas en toda la empresa."],"mejora":"Fije metas cuantitativas de servicio (ejemplo: 95 % de entregas a tiempo y completas).","pts":[0,1.09,2.17,3.26,4.35]},
+        {"id":"8a.2","texto":"¿Cómo es el sistema de comunicación e información operativa hacia el cliente?","ops":["Inexistente; solo se habla con el cliente cuando éste llama para reclamar.","Comunicaciones comerciales puntuales sin información operativa.","Información canalizada exclusivamente a través de los vendedores.","Canales formales de información de pedidos atendidos por personal de logística.","Comunicación multicanal en tiempo real con portal de autoservicio para el cliente."],"mejora":"Proporcione al cliente información proactiva sobre la preparación y envío de su pedido.","pts":[0,1.09,2.17,3.26,4.35]},
+        {"id":"8a.3","texto":"¿Se recogen sugerencias del personal operativo para mejorar el servicio?","ops":["No se consultan las opiniones del personal de almacén ni reparto.","Buzón de sugerencias simbólico sin seguimiento posterior.","Reuniones esporádicas tras presentarse incidencias de gravedad.","Grupos regulares de trabajo para analizar sugerencias de mejora operativa.","Metodología implantada de mejora continua con implicación de todo el equipo."],"mejora":"Escuche a los chóferes y mozos de almacén; son quienes mejor conocen las fricciones en la entrega al cliente.","pts":[0,1.09,2.17,3.26,4.35]},
+        {"id":"8a.4","texto":"¿Dispone de la empresa de certificaciones oficiales de calidad de servicio (ISO 9001, etc.)?","ops":["No disponemos de ninguna certificación.","Se está valorando o preparando la implantación.","Certificación de calidad básica a nivel local o sectorial.","Certificación oficial de calidad en vigor (ISO 9001 u homologaciones de cliente).","Múltiples certificaciones internacionales integradas (calidad, ambiental, seguridad laboral)."],"mejora":"Inicie la protocolización de sus procesos logísticos bajo estándares contrastados de calidad (ISO 9001).","pts":[0,1.09,2.17,3.26,4.35]},
+        {"id":"8a.5","texto":"¿Existe coordinación interdepartamental para responder a las exigencias del cliente?","ops":["No existe coordinación; cada departamento culpa al otro de los fallos.","Coordinación esporádica solo para resolver crisis urgentes.","Herramientas básicas compartidas de comunicación interdepartamental.","Reuniones periódicas estructuradas entre comercial, compras y logística.","Integración total de procesos centrados de principio a fin en la satisfacción del cliente."],"mejora":"Cree un comité mensual de servicio al cliente entre los directores comerciales y de operaciones.","pts":[0,1.09,2.17,3.26,4.35]},
+        {"id":"8a.6","texto":"¿Se define la experiencia del cliente con métricas de recomendación (*NPS*) y satisfacción?","ops":["No.","Parcialmente, sin método.","Sí, con método básico.","Sí, con método definido y medido.","Sí, con método integrado y mejora continua."],"mejora":"Mida periódicamente el índice NPS (*Net Promoter Score*) de sus clientes en la vertiente logística.","pts":[0,1.09,2.17,3.26,4.35]},
+        {"id":"8a.7","texto":"¿Se dispone de un mapa del viaje del cliente (*customer journey*) en sus puntos de contacto logístico?","ops":["No.","Parcialmente, sin método.","Sí, con método básico.","Sí, con método definido y medido.","Sí, con método integrado y mejora continua."],"mejora":"Identifique los momentos críticos del cliente: confirmación de compra, aviso de salida y momento de descarga.","pts":[0,1.09,2.17,3.26,4.35]},
+        {"id":"8a.8","texto":"¿Se ofrecen herramientas digitales de autoservicio (seguimiento, albaranes web)?","ops":["No.","Parcialmente, sin método.","Sí, con método básico.","Sí, con método definido y medido.","Sí, con método integrado y mejora continua."],"mejora":"Permita que sus clientes puedan descargarse sus propios albaranes y facturas desde su sitio web.","pts":[0,1.09,2.17,3.26,4.35]}
+      ]},
+      {"id":"8b","nombre":"Gestión y resolución de reclamaciones e incidencias","max":30.43,"preguntas":[
+        {"id":"8b.1","texto":"¿Cuál es el volumen o frecuencia de incidencias que experimentan los clientes?","ops":["Muy alto volumen de incidencias; quejas constantes.","Frecuencia elevada que afecta a la imagen corporativa.","Nivel medio de incidencias dentro de la media del mercado.","Bajo número de incidencias; situaciones excepcionales.","Incidencias prácticamente nulas; calidad de servicio contrastada."],"mejora":"Establezca un registro centralizado de incidencias para evitar que se repitan los mismos problemas.","pts":[0,1.09,2.17,3.26,4.35]},
+        {"id":"8b.2","texto":"¿Existe un equipo o persona encargada específicamente de la atención de incidencias?","ops":["No hay nadie asignado; la llamada la atiende quien descuelgue el teléfono.","Cualquier comercial atiende las quejas sin registrar un expediente común.","El equipo comercial atiende quejas pero sin apoyo logístico.","Departamento específico de atención al cliente (*customer service*).","Servicio de atención al cliente integrado dentro de la propia operativa logística."],"mejora":"Nombre un interlocutor de atención al cliente que gestione y resuelva las quejas logísticas.","pts":[0,1.09,2.17,3.26,4.35]},
+        {"id":"8b.3","texto":"¿Cómo se registran y procesan las reclamaciones de calidad de servicio?","ops":["No se registra ninguna reclamación formalmente.","Se anotan en correos o notas sueltas sin codificar su motivo.","Canal estructurado de recepción (teléfono, e-mail o web) pero sin análisis posterior.","Sistema de gestión de incidencias que registra procedencia, responsable y plazo.","Plataforma CRM/ERP que registra, tipifica y gestiona el ciclo completo de la queja."],"mejora":"Tipifique las quejas en su software por motivos concretos para generar estadísticas fiables de fallo.","pts":[0,1.09,2.17,3.26,4.35]},
+        {"id":"8b.4","texto":"¿Se ejecutan acciones correctoras reales tras detectar los motivos de las quejas?","ops":["No se toma ninguna medida; se limitan a pedir disculpas.","Se analizan quejas pero no se corrigen los procedimientos operativos.","Se aplican soluciones urgentes de parche sin identificar las causas raíz.","Acciones correctoras implantadas formalmente con responsables asignados.","Planes estructurados de acción preventiva con verificación posterior de su eficacia."],"mejora":"Asegúrese de cerrar cada reclamación importante aplicando una medida que impida que vuelva a suceder.","pts":[0,1.09,2.17,3.26,4.35]},
+        {"id":"8b.5","texto":"¿El plazo de respuesta y resolución de quejas es ágil?","ops":["No hay respuesta o se demora semanas.","Plazo de resolución muy lento y poco transparente.","Resolución en un plazo regular que no satisface del todo al cliente.","Plazo ágil con información continua al cliente del estado de su caso.","Resolución inmediata de incidencias en menos de 24 horas."],"mejora":"Comprometa un tiempo máximo de respuesta inicial de dos horas ante cualquier queja de entrega.","pts":[0,1.09,2.17,3.26,4.35]},
+        {"id":"8b.6","texto":"¿Se realiza análisis causal profundo de las reclamaciones recurrentes?","ops":["No.","Parcialmente, sin método.","Sí, con método básico.","Sí, con método definido y medido.","Sí, con método integrado y mejora continua."],"mejora":"Aplique la técnica de los *5 Porqués* en las reclamaciones que se repitan más de dos veces.","pts":[0,1.09,2.17,3.26,4.35]},
+        {"id":"8b.7","texto":"¿Se formalizan acuerdos de nivel de servicio (SLA) con penalizaciones por incumplimiento?","ops":["No.","Parcialmente, sin método.","Sí, con método básico.","Sí, con método definido y medido.","Sí, con método integrado y mejora continua."],"mejora":"Pacte por escrito con sus clientes más relevantes los baremos de entrega y penalizaciones asumidas.","pts":[0,1.09,2.17,3.26,4.35]}
+      ]},
+      {"id":"8c","nombre":"Medición de la satisfacción y mejora continua del servicio","max":34.78,"preguntas":[
+        {"id":"8c.1","texto":"¿Cuál es la percepción del cliente sobre el cumplimiento de los plazos de entrega?","ops":["Muy insatisfecho con la tardanza y retrasos.","Poco satisfecho; considera que el servicio es lento.","Satisfecho; cumplimos lo habitual en el mercado.","Bastante satisfecho con la agilidad y cumplimiento del plazo.","Muy satisfecho; el plazo de entrega es una ventaja competitiva de la empresa."],"mejora":"Reduzca los tiempos muertos de almacén para ganar ventaja en el plazo de entrega al cliente.","pts":[0,1.09,2.17,3.26,4.35]},
+        {"id":"8c.2","texto":"¿El plazo de entrega es competitivo frente al ofrecido por sus competidores directos?","ops":["Se desconocen los plazos que ofrece la competencia.","Nuestros plazos de entrega son claramente superiores a los de los competidores.","Nuestros plazos están en la media del mercado.","Plazos más rápidos que la mayoría de competidores.","Plazos líderes en el sector que marcan el estándar del mercado."],"mejora":"Haga *benchmarking* de los plazos de entrega y condiciones de envío de sus tres mayores competidores.","pts":[0,1.09,2.17,3.26,4.35]},
+        {"id":"8c.3","texto":"¿Las entregas se efectúan exactamente en la fecha acordada con el cliente?","ops":["No se cumplen las fechas en la mayoría de pedidos.","Desviaciones frecuentes sobre la fecha informada.","Cumplimiento aceptable con retrasos moderados.","Desviaciones mínimas y excepcionales.","Cumplimiento estricto del 100 % en la fecha comprometida."],"mejora":"No prometa fechas que la operativa de almacén y transporte no pueda garantizar con holgura.","pts":[0,1.09,2.17,3.26,4.35]},
+        {"id":"8c.4","texto":"¿Las cantidades entregadas coinciden rigurosamente con las solicitadas?","ops":["Frecuentes faltas y errores en las unidades entregadas.","Errores habituales que exigen envíos complementarios.","Errores esporádicos en referencias de poco movimiento.","Cantidades muy precisas con errores casi inexistentes.","Calidad perfecta de suministro: se entrega exactamente lo solicitado."],"mejora":"Exija doble chequeo en la salida de almacén para no enviar pedidos incompletos sin avisar.","pts":[0,1.09,2.17,3.26,4.35]},
+        {"id":"8c.5","texto":"¿La calidad de la mercancía entregada responde a las expectativas del cliente?","ops":["La calidad física percibida está muy por debajo de lo esperado.","Percepción deficiente por desperfectos o mal aspecto en la entrega.","La calidad responde a lo contratado sin destacar.","La calidad y presentación superan las expectativas del cliente.","Presentación impecable del producto y embalaje que genera gran satisfacción."],"mejora":"Cuide el aspecto del embalaje final; un palé roto o sucio daña la reputación de su producto.","pts":[0,1.09,2.17,3.26,4.35]},
+        {"id":"8c.6","texto":"¿Se mide periódicamente la satisfacción del cliente con el servicio logístico?","ops":["No se realiza ninguna encuesta ni medición formal.","Se sondea verbalmente solo de forma esporádica.","Encuesta anual genérica de satisfacción comercial.","Encuestas periódicas con preguntas específicas sobre almacén, transporte y servicio.","Auditorías y entrevistas continuas de satisfacción realizadas de forma sistemática."],"mejora":"Lance encuestas breves y periódicas preguntando exclusivamente por la calidad y puntualidad del envío.","pts":[0,1.09,2.17,3.26,4.35]},
+        {"id":"8c.7","texto":"¿Se segmentan las mediciones de satisfacción por canal de venta o tipología de cliente?","ops":["No.","Parcialmente, sin método.","Sí, con método básico.","Sí, con método definido y medido.","Sí, con método integrado y mejora continua."],"mejora":"Segmente las métricas de servicio entre grandes cuentas, minoristas y clientes de venta electrónica.","pts":[0,1.09,2.17,3.26,4.35]},
+        {"id":"8c.8","texto":"¿Se cierra el ciclo de mejora con un plan de acción formal ante los resultados de satisfacción?","ops":["No.","Parcialmente, sin método.","Sí, con método básico.","Sí, con método definido y medido.","Sí, con método integrado y mejora continua."],"mejora":"Reúnase trimestralmente para comunicar a la plantilla los resultados de satisfacción y fijar mejoras.","pts":[0,1.09,2.17,3.26,4.35]}
+      ]}
+    ]}
+  ],
+  "SECT":["Alimentación y gran consumo","Automoción y componentes","Química y farmacéutico","Textil, moda y calzado","Electrónica y electrodomésticos","Mobiliario y decoración","Construcción y materiales","Maquinaria y bienes de equipo","Distribución mayorista","Comercio minorista y retail","E-commerce y venta online","Salud y equipamiento médico","Agroalimentario y perecederos","Mensajería y paquetería","Retail farmacéutico y parafarmacia","Recambios y accesorios","Bebidas y alimentación líquida","Industria gráfica y embalaje","Metalúrgica y transformados","Plásticos y envases","Otros servicios logísticos","Otros (especificar)"],
+  "MED":[{"k":"1-1a","m":44},{"k":"1-1b","m":41},{"k":"1-1c","m":47},{"k":"1-1d","m":43},{"k":"1-1e","m":46},{"k":"2-2a","m":45},{"k":"2-2b","m":49},{"k":"2-2c","m":42},{"k":"2-2d","m":40},{"k":"2-2e","m":48},{"k":"3-3a","m":44},{"k":"3-3b","m":43},{"k":"3-3c","m":46},{"k":"3-3d","m":45},{"k":"3-3e","m":42},{"k":"4-4a","m":47},{"k":"4-4b","m":41},{"k":"4-4c","m":44},{"k":"4-4d","m":45},{"k":"5-5a","m":43},{"k":"5-5b","m":46},{"k":"5-5c","m":44},{"k":"5-5d","m":40},{"k":"6-6a","m":45},{"k":"6-6b","m":47},{"k":"6-6c","m":43},{"k":"7-7a","m":42},{"k":"7-7b","m":46},{"k":"7-7c","m":44},{"k":"7-7d","m":41},{"k":"7-7e","m":45},{"k":"8-8a","m":43},{"k":"8-8b","m":47},{"k":"8-8c","m":42}],
+  "MEDF":[44,45,44,44,43,45,44,44],
+  "MEDTOT":44,
+  "TOTAL":1000
+};
+
+function countQuestions(bls){
+  var t=0;
+  for(var i=0;i<bls.length;i++){
+    for(var j=0;j<bls[i].dims.length;j++){
+      t += bls[i].dims[j].preguntas.length;
+    }
+  }
+  return t;
+}
+var M=B.M,SECT=B.SECT,MED=B.MED,MEDF=B.MEDF,MEDTOT=B.MEDTOT,TOTAL=B.TOTAL,QN=countQuestions(M);
+var KC="diagLog.actual.v14",KDB="diagLog.basedatos.v1";
+
+function media(k){
+  for(var i=0;i<MED.length;i++){
+    if(MED[i].k===k) return MED[i].m;
+  }
+  return 45;
+}
+function mediaFase(id){
+  for(var i=0;i<M.length;i++){
+    if(M[i].id===id) return MEDF[i]!=null?MEDF[i]:MEDTOT;
+  }
+  return MEDTOT;
+}
+function shuffle(n){
+  var a=[];
+  for(var i=0;i<n;i++) a.push(i);
+  for(var i=n-1;i>0;i--){
+    var j=Math.floor(Math.random()*(i+1));
+    var tmp=a[i]; a[i]=a[j]; a[j]=tmp;
+  }
+  return a;
+}
+function ordenNuevo(){
+  var o={};
+  for(var b=0;b<M.length;b++){
+    for(var d=0;d<M[b].dims.length;d++){
+      for(var p=0;p<M[b].dims[d].preguntas.length;p++){
+        var q=M[b].dims[d].preguntas[p];
+        o[q.id]=shuffle(q.ops.length);
+      }
+    }
+  }
+  return o;
+}
+function blank(){return {empresa:{},resp:{},orden:ordenNuevo(),guardadoId:null,firma:null};}
+
+var A=JSON.parse(localStorage.getItem(KC)||"null");
+if(!A||!A.orden) A=blank();
+
+function ord(p){
+  if(!A.orden) A.orden={};
+  if(!A.orden[p.id]||A.orden[p.id].length!==p.ops.length) A.orden[p.id]=shuffle(p.ops.length);
+  return A.orden[p.id];
+}
+function persist(){try{localStorage.setItem(KC,JSON.stringify(A));}catch(e){}}
+function DB(){try{return JSON.parse(localStorage.getItem(KDB)||"[]");}catch(e){return [];}}
+function setDB(x){try{localStorage.setItem(KDB,JSON.stringify(x));}catch(e){}}
+function esc(s){return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/"/g,"&quot;");}
+function fmt(n,d){
+  if(d==null) d=1;
+  return (+n).toLocaleString("es-ES",{minimumFractionDigits:d,maximumFractionDigits:d});
+}
+function allQ(){
+  var o=[];
+  for(var b=0;b<M.length;b++){
+    for(var d=0;d<M[b].dims.length;d++){
+      for(var p=0;p<M[b].dims[d].preguntas.length;p++){
+        o.push({b:M[b],d:M[b].dims[d],p:M[b].dims[d].preguntas[p]});
+      }
+    }
+  }
+  return o;
+}
+function sinResponder(b){
+  var o=[];
+  for(var d=0;d<b.dims.length;d++){
+    for(var p=0;p<b.dims[d].preguntas.length;p++){
+      var q=b.dims[d].preguntas[p];
+      if(A.resp[q.id]==null) o.push(q);
+    }
+  }
+  return o;
+}
+
+function calc(R){
+  R=R||A.resp;
+  var tot=0,n=0;
+  var bl=[];
+  for(var b=0;b<M.length;b++){
+    var blk=M[b];
+    var bo=0,bn=0,bq=0;
+    var dims=[];
+    for(var d=0;d<blk.dims.length;d++){
+      var dim=blk.dims[d];
+      var o=0,c=0;
+      for(var p=0;p<dim.preguntas.length;p++){
+        var q=dim.preguntas[p];
+        var v=R[q.id];
+        if(v!=null){ o+=q.pts[v]; c++; }
+      }
+      bo+=o; bn+=c; bq+=dim.preguntas.length;
+      var mdv=media(blk.id+"-"+dim.id);
+      var pg=dim.max?(o/dim.max*100):0;
+      dims.push({id:dim.id,nombre:dim.nombre,max:dim.max,obt:o,resp:c,n:dim.preguntas.length,pct:pg,md:mdv,pd:mdv?(pg/mdv*100):0});
+    }
+    var mdf=mediaFase(blk.id);
+    var pgf=blk.max?(bo/blk.max*100):0;
+    tot+=bo; n+=bn;
+    bl.push({id:blk.id,nombre:blk.nombre,max:blk.max,obt:bo,resp:bn,n:bq,pct:pgf,md:mdf,pd:mdf?(pgf/mdf*100):0,dims:dims});
+  }
+  return {bl:bl,tot:tot,n:n,pct:(tot/TOTAL*100),md:MEDTOT,pd:(tot/TOTAL*100/MEDTOT*100)};
+}
+
+function nivel(p){
+  return p>=80?["Avanzado","#16a34a"]:p>=60?["Consolidado","#0284c7"]:p>=40?["En desarrollo","#d97706"]:p>=20?["Básico","#ea580c"]:["Inicial","#dc2626"];
+}
+function bar(p){
+  var c=nivel(p)[1];
+  return '<div class="b"><div style="width:'+Math.min(100,p)+'%;background:'+c+'"></div></div>';
+}
+
+var cur="inicio",aviso=null;
+function firma(){return JSON.stringify([A.empresa,A.resp]);}
+function guardadoVigente(){
+  if(!A.guardadoId||A.firma!==firma()) return false;
+  var db=DB();
+  for(var i=0;i<db.length;i++){
+    if(db[i].id===A.guardadoId) return true;
+  }
+  return false;
+}
+function completo(){return calc().n===QN&&A.empresa.nombre;}
+function go(k){cur=k;aviso=null;nav();view();window.scrollTo(0,0);}
+
+function nav(){
+  var c=calc();
+  var h='<a href="#" data-go="inicio" class="'+(cur==="inicio"?"on":"")+'"><span>🏢 Datos empresa</span></a>';
+  for(var i=0;i<c.bl.length;i++){
+    var b=c.bl[i];
+    h+='<a href="#" data-go="b'+b.id+'" class="'+(cur===("b"+b.id)?"on":"")+'"><span>'+b.id+'. '+esc(b.nombre)+'</span><small>'+b.resp+'/'+b.n+'</small></a>';
+  }
+  h+='<a href="#" data-go="fin" class="'+(cur==="fin"?"on":"")+'"><span>💾 Finalizar y grabar</span></a>';
+  h+='<a href="#" data-go="inf" class="'+(cur==="inf"?"on":"")+'"><span>🖨️ Informe</span></a>';
+  h+='<a href="#" data-go="bd" class="'+(cur==="bd"?"on":"")+'"><span>🗄️ Base de datos</span><small>'+DB().length+'</small></a>';
+  document.getElementById("nav").innerHTML=h;
+  document.getElementById("pr").textContent=c.n+" / "+QN;
+  document.getElementById("st").innerHTML=guardadoVigente()
+    ? '<span style="color:var(--ok);font-weight:700">✔ Sincronizado</span>'
+    : (A.guardadoId?'<span style="color:var(--no);font-weight:600">Cambios pendientes</span>':'Sin guardar');
+}
+
+function f(l,k){
+  return '<div><label>'+l+'</label><input type="text" data-e="'+k+'" value="'+esc(A.empresa[k])+'"></div>';
+}
+
+function view(){
+  var m=document.getElementById("main");
+  var h="";
+  if(cur==="inicio"){
+    h='<div class="card"><h2>Datos de la organización y contexto</h2>';
+    h+='<div class="hint">Cumplimente los datos de la compañía y responda con objetividad a cada una de las 8 fases logísticas. Las opciones se ordenan de forma aleatoria para neutralizar sesgos. Para poder imprimir o exportar el informe ejecutivo, complete y guarde el diagnóstico.</div>';
+    h+='<div class="grid">'+f("Nombre de la empresa *","nombre")+f("CIF / NIF","cif")+f("Nº de empleados","empleados")+f("Persona que responde","persona")+f("Cargo","cargo")+f("Email corporativo","email")+'</div>';
+    h+='<div style="margin-top:14px"><label>Sector de actividad</label><select data-e="sector"><option value=""></option>';
+    for(var i=0;i<SECT.length;i++){
+      h+='<option'+(A.empresa.sector===SECT[i]?' selected':'')+'>'+esc(SECT[i])+'</option>';
+    }
+    h+='</select></div>';
+    h+='<div style="margin-top:14px"><label>Fecha del diagnóstico</label><input type="date" data-e="fecha" value="'+esc(A.empresa.fecha||new Date().toISOString().slice(0,10))+'"></div>';
+    h+='<h3>Estructura del diagnóstico logístico</h3><table><tr><th>Fase</th><th>Dimensiones</th></tr>';
+    for(var i=0;i<M.length;i++){
+      var b=M[i];
+      h+='<tr><td>'+b.id+'. '+esc(b.nombre)+'</td><td>'+b.dims.length+'</td></tr>';
+    }
+    var totalDims=0;
+    for(var i=0;i<M.length;i++) totalDims+=M[i].dims.length;
+    h+='<tr style="font-weight:700"><td>Total</td><td>'+totalDims+'</td></tr></table>';
+    h+='<div style="margin-top:20px;display:flex;gap:10px;flex-wrap:wrap"><button class="btn ok" data-go="b1">Comenzar con la Fase 1 ›</button><button class="btn sec" data-go="bd">Ver histórico de evaluaciones</button></div></div>';
+  } else if(cur.charAt(0)==="b"){
+    var phaseId=cur.slice(1);
+    var bi=-1;
+    for(var i=0;i<M.length;i++){
+      if(M[i].id===phaseId){ bi=i; break; }
+    }
+    var b=M[bi],c=calc().bl[bi];
+    h='<div class="card"><h2>Fase '+b.id+': '+esc(b.nombre)+'</h2>';
+    h+='<div class="kpi"><div><b id="kpb">'+c.resp+'/'+c.n+'</b>Respondidas</div></div>';
+    if(aviso&&aviso.id===b.id){
+      var faltList=[];
+      for(var i=0;i<aviso.falt.length;i++) faltList.push(aviso.falt[i].id);
+      h+='<div class="hint warn">Debe responder todas las preguntas para validar la fase. Faltan <b>'+aviso.falt.length+'</b>: <b>'+faltList.join(", ")+'</b>.<div style="margin-top:8px"><button class="btn sec" data-go="irprimera">Ir a la primera sin contestar</button></div></div>';
+    }
+    for(var d=0;d<b.dims.length;d++){
+      var dim=b.dims[d];
+      h+='<h3>'+dim.id+' · '+esc(dim.nombre)+'</h3>';
+      for(var p=0;p<dim.preguntas.length;p++){
+        var q=dim.preguntas[p];
+        var v=A.resp[q.id];
+        var isMiss=false;
+        if(aviso&&aviso.falt){
+          for(var fidx=0;fidx<aviso.falt.length;fidx++){
+            if(aviso.falt[fidx].id===q.id){ isMiss=true; break; }
+          }
+        }
+        h+='<div class="q'+(isMiss?' miss':'')+'" id="q'+q.id.replace(/\./g,'_')+'">';
+        h+='<div class="t"><span>'+q.id+'</span>'+esc(q.texto)+'</div>';
+        var ordenIndices=ord(q);
+        for(var oi=0;oi<ordenIndices.length;oi++){
+          var idx=ordenIndices[oi];
+          h+='<label class="op'+(v===idx?' sel':'')+'" data-i="'+idx+'"><input type="radio" name="r'+q.id+'" value="' + idx + '" ' + (v === idx ? 'checked' : '') + '><span class="mk"></span><span>' + esc(q.ops[idx]) + '</span></label>';
+        }
+        h+='</div>';
+      }
+    }
+    h+='<div style="display:flex;gap:10px;margin-top:20px"><button class="btn sec" data-go="inicio">‹ Volver al Inicio</button>';
+    if(bi>0) h+='<button class="btn sec" data-go="b'+M[bi-1].id+'">‹ Anterior</button>';
+    h+='<span style="flex:1"></span>';
+    if(bi<M.length-1) h+='<button class="btn" data-go="b'+M[bi+1].id+'">Siguiente Fase ›</button>';
+    else h+='<button class="btn ok" data-go="fin">Finalizar Evaluación ›</button>';
+    h+='</div></div>';
+  } else if(cur==="fin"){
+    var c=calc();
+    var allQuestions=allQ();
+    var faltCount=0;
+    for(var i=0;i<allQuestions.length;i++){
+      if(A.resp[allQuestions[i].p.id]==null) faltCount++;
+    }
+    var vig=guardadoVigente();
+    h='<div class="card"><h2>Finalizar y grabar diagnóstico</h2>';
+    if(!A.empresa.nombre) h+='<div class="hint warn">Debe indicar el nombre de la empresa en los datos generales.</div>';
+    if(faltCount>0) h+='<div class="hint warn">Quedan <b>'+faltCount+'</b> preguntas pendientes por responder. Complételas para habilitar la grabación.</div>';
+    else h+='<div class="hint good">Diagnóstico completo: <b>'+QN+'</b> preguntas respondidas · <b>'+fmt(c.tot)+' / '+TOTAL+' puntos</b> ('+fmt(c.pct)+' %).</div>';
+    h+='<div class="kpi">';
+    for(var i=0;i<c.bl.length;i++){
+      h+='<div><b>'+fmt(c.bl[i].pct,0)+' %</b>'+esc(c.bl[i].nombre)+'</div>';
+    }
+    h+='</div><div style="display:flex;gap:10px;margin-top:20px">';
+    h+='<button class="btn ok" '+(completo()&&!vig?'':'disabled')+' data-go="grabar">💾 Grabar en Base de Datos</button>';
+    h+='<button class="btn sec" '+(vig?'':'disabled')+' data-go="inf">🖨️ Ver Informe Ejecutivo</button>';
+    h+='</div></div>';
+  } else if(cur==="inf"){
+    if(!guardadoVigente()){
+      h='<div class="card"><h2>Informe no disponible</h2><div class="hint warn">Debe responder el cuestionario íntegramente y grabarlo para desbloquear el informe.</div><button class="btn" data-go="fin">Ir a finalizar</button></div>';
+    } else {
+      var db=DB();
+      var selected=null;
+      for(var i=0;i<db.length;i++){
+        if(db[i].id===A.guardadoId){ selected=db[i]; break; }
+      }
+      h=informe(selected);
+    }
+  } else if(cur==="bd"){
+    var db=DB();
+    h='<div class="card"><h2>Histórico de diagnósticos guardados</h2><div style="display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap"><button class="btn" data-go="csvResp">Exportar respuestas (CSV)</button><button class="btn sec" data-go="csvRes">Exportar resumen (CSV)</button><button class="btn sec" data-go="backup">Copia de seguridad (JSON)</button></div>';
+    if(!db.length){
+      h+='<p>No hay diagnósticos almacenados todavía en este navegador.</p>';
+    } else {
+      h+='<table><tr><th>Código</th><th>Empresa</th><th>Sector</th><th>Fecha</th><th>Puntos</th><th>%</th><th>Nivel</th><th>Acción</th></tr>';
+      for(var i=db.length-1;i>=0;i--){
+        var r=db[i];
+        var n=nivel(r.pct);
+        h+='<tr><td><b>'+r.id+'</b></td><td>'+esc(r.empresa.nombre)+'</td><td>'+esc(r.empresa.sector||'-')+'</td><td>'+esc(r.empresa.fecha||'-')+'</td><td>'+fmt(r.tot)+'</td><td>'+fmt(r.pct)+'%</td><td><span class="tag" style="background:'+n[1]+'">'+n[0]+'</span></td><td><button class="btn sec" style="padding:4px 10px;font-size:12px" data-abrir="'+r.id+'">Abrir</button></td></tr>';
+      }
+      h+='</table>';
+    }
+    h+='</div>';
+  }
+  m.innerHTML=h;
+  m.onclick=delegar;
+  var inputs=m.querySelectorAll("[data-e]");
+  for(var i=0;i<inputs.length;i++){
+    (function(el){
+      el.oninput=el.onchange=function(){
+        A.empresa[el.getAttribute("data-e")]=el.value;
+        persist();
+        nav();
+      };
+    })(inputs[i]);
+  }
+  nav();
+}
+
+function delegar(e){
+  var g=e.target.closest("[data-go]");
+  if(g){ e.preventDefault(); accion(g.getAttribute("data-go")); return; }
+  var op=e.target.closest("label.op");
+  if(op){
+    e.preventDefault();
+    var c=op.closest(".q");
+    if(!c) return;
+    var r=c.querySelector("input[type=radio]");
+    if(r) marcar(c,r.name.slice(1),parseInt(op.getAttribute("data-i"),10));
+    return;
+  }
+  var ab=e.target.closest("[data-abrir]");
+  if(ab){ e.preventDefault(); abrir(ab.getAttribute("data-abrir")); return; }
+}
+
+function marcar(cont,pid,i){
+  if(isNaN(i)) return;
+  A.resp[pid]=i;
+  persist();
+  var labels=cont.querySelectorAll("label.op");
+  for(var l=0;l<labels.length;l++){
+    var inp=labels[l].querySelector("input");
+    var on=(inp.value===String(i));
+    labels[l].className="op"+(on?" sel":"");
+    inp.checked=on;
+  }
+  cont.className="q";
+  nav();
+}
+
+function accion(k){
+  if(k==="descargarHtml"){ descargarApp(); return; }
+  if(k==="grabar"){ grabar(); return; }
+  if(k==="csvResp"){ expCSV(); return; }
+  if(k==="csvRes"){ expRes(); return; }
+  if(k==="backup"){ dl("diagnosticos_logispyme.json",JSON.stringify(DB(),null,2),"application/json"); return; }
+  if(k==="irprimera"){ if(aviso&&aviso.falt.length) irQ(cur.slice(1),aviso.falt[0].id); return; }
+  if(cur.charAt(0)==="b"){
+    var bi=-1;
+    for(var i=0;i<M.length;i++){
+      if(M[i].id===cur.slice(1)){ bi=i; break; }
+    }
+    if(bi>=0){
+      var falt=sinResponder(M[bi]);
+      if(falt.length){ aviso={id:M[bi].id,falt:falt}; nav(); view(); return; }
+    }
+  }
+  go(k);
+}
+
+function irQ(b,q){
+  go("b"+b);
+  setTimeout(function(){
+    var el=document.getElementById("q"+q.replace(/\./g,"_"));
+    if(el){ el.className="q miss"; el.scrollIntoView({behavior:"smooth",block:"center"}); }
+  },60);
+}
+
+function grabar(){
+  if(!completo()) return;
+  var c=calc(), db=DB();
+  var exists=false;
+  if(A.guardadoId){
+    for(var i=0;i<db.length;i++){
+      if(db[i].id===A.guardadoId){ exists=true; break; }
+    }
+  }
+  var id=exists ? A.guardadoId : ("DL-"+new Date().getFullYear()+"-"+String(db.length+1).padStart(4,"0"));
+  var fasesData=[];
+  for(var i=0;i<c.bl.length;i++){
+    var blk=c.bl[i];
+    fasesData.push({id:blk.id,nombre:blk.nombre,max:blk.max,obt:Math.round(blk.obt*100)/100,pct:Math.round(blk.pct*100)/100});
+  }
+  var reg={
+    id:id,
+    grabado:new Date().toISOString(),
+    empresa:JSON.parse(JSON.stringify(A.empresa)),
+    resp:JSON.parse(JSON.stringify(A.resp)),
+    tot:Math.round(c.tot*100)/100,
+    pct:Math.round(c.pct*100)/100,
+    fases:fasesData
+  };
+  var ix=-1;
+  for(var i=0;i<db.length;i++){
+    if(db[i].id===id){ ix=i; break; }
+  }
+  if(ix>=0) db[ix]=reg; else db.push(reg);
+  setDB(db);
+  A.guardadoId=id;
+  A.firma=firma();
+  persist();
+  go("inf");
+}
+
+function abrir(id){
+  var db=DB();
+  var r=null;
+  for(var i=0;i<db.length;i++){
+    if(db[i].id===id){ r=db[i]; break; }
+  }
+  if(!r) return;
+  A.empresa=JSON.parse(JSON.stringify(r.empresa));
+  A.resp=JSON.parse(JSON.stringify(r.resp));
+  A.guardadoId=r.id;
+  A.firma=firma();
+  persist();
+  go("inf");
+}
+
+function dl(n,t,tp){
+  var a=document.createElement("a");
+  a.href=URL.createObjectURL(new Blob([t],{type:tp}));
+  a.download=n;
+  a.click();
+}
+
+function qCSV(a){
+  var res=[];
+  for(var i=0;i<a.length;i++){
+    res.push('"'+String(a[i]==null?"":a[i]).replace(/"/g,'""')+'"');
+  }
+  return res.join(";");
+}
+
+function expCSV(){
+  var L=[qCSV(["Registro","Empresa","Sector","Fecha","Fase","Dimensión","ID","Pregunta","Respuesta","Puntos"])];
+  var db=DB();
+  var questions=allQ();
+  for(var i=0;i<db.length;i++){
+    var r=db[i];
+    for(var j=0;j<questions.length;j++){
+      var x=questions[j];
+      var v=r.resp[x.p.id];
+      L.push(qCSV([r.id,r.empresa.nombre,r.empresa.sector,r.empresa.fecha,x.b.nombre,x.d.nombre,x.p.id,x.p.texto,v==null?"":x.p.ops[v],v==null?"":x.p.pts[v]]));
+    }
+  }
+  dl("diagnostico_respuestas.csv","\ufeff"+L.join("\n"),"text/csv;charset=utf-8");
+}
+
+function expRes(){
+  var header=["Registro","Empresa","Sector","Fecha","Total Puntos","% Total"];
+  for(var i=0;i<M.length;i++) header.push(M[i].nombre+" (%)");
+  var L=[qCSV(header)];
+  var db=DB();
+  for(var i=0;i<db.length;i++){
+    var r=db[i];
+    var row=[r.id,r.empresa.nombre,r.empresa.sector,r.empresa.fecha,r.tot,r.pct];
+    for(var j=0;j<r.fases.length;j++) row.push(r.fases[j].pct);
+    L.push(qCSV(row));
+  }
+  dl("diagnostico_resumen.csv","\ufeff"+L.join("\n"),"text/csv;charset=utf-8");
+}
+
+function descargarApp(){
+  var htmlContent="<!DOCTYPE html>\n"+document.documentElement.outerHTML;
+  dl("diagnostico_logistico_logispyme.html",htmlContent,"text/html;charset=utf-8");
+}
+
+function radar(vals,fases,medias,w){
+  var R=w/2-70,cx=w/2,cy=w/2,n=vals.length;
+  function pt(i,r){
+    var a=-Math.PI/2+2*Math.PI*i/n;
+    return [cx+r*Math.cos(a),cy+r*Math.sin(a)];
+  }
+  function poly(rs){
+    var res=[];
+    for(var i=0;i<rs.length;i++){
+      var p=pt(i,rs[i]);
+      res.push(p[0].toFixed(1)+","+p[1].toFixed(1));
+    }
+    return res.join(" ");
+  }
+  var g="";
+  var steps=[20,40,60,80,100];
+  for(var s=0;s<steps.length;s++){
+    var p=steps[s];
+    var rs=[];
+    for(var i=0;i<vals.length;i++) rs.push(R*p/100);
+    g+='<polygon points="'+poly(rs)+'" fill="none" stroke="#e2e8f0" stroke-width="1.2"/>';
+  }
+  for(var i=0;i<vals.length;i++){
+    var p2=pt(i,R);
+    g+='<line x1="'+cx+'" y1="'+cy+'" x2="'+p2[0].toFixed(1)+'" y2="'+p2[1].toFixed(1)+'" stroke="#e2e8f0" stroke-width="1.2"/>';
+  }
+  if(medias&&medias.length){
+    var rMed=[];
+    for(var i=0;i<medias.length;i++) rMed.push(R*Math.min(100,medias[i])/100);
+    g+='<polygon points="'+poly(rMed)+'" fill="none" stroke="#e68a19" stroke-width="2" stroke-dasharray="5 4"/>';
+  }
+  var rVal=[];
+  for(var i=0;i<vals.length;i++) rVal.push(R*Math.min(100,vals[i])/100);
+  g+='<polygon points="'+poly(rVal)+'" fill="rgba(29,106,143,.22)" stroke="#1d6a8f" stroke-width="2.2"/>';
+  for(var i=0;i<vals.length;i++){
+    var p2=pt(i,R*Math.min(100,vals[i])/100);
+    g+='<circle cx="'+p2[0].toFixed(1)+'" cy="'+p2[1].toFixed(1)+'" r="3.5" fill="#1d6a8f"/>';
+  }
+  for(var i=0;i<fases.length;i++){
+    var p2=pt(i,R+24);
+    var anc=Math.abs(p2[0]-cx)<8?"middle":(p2[0]>cx?"start":"end");
+    g+='<text x="'+p2[0].toFixed(1)+'" y="'+p2[1].toFixed(1)+'" font-size="10.5" font-weight="600" fill="#0f3750" text-anchor="'+anc+'">'+esc(fases[i])+'</text>';
+    g+='<text x="'+p2[0].toFixed(1)+'" y="'+(p2[1]+12).toFixed(1)+'" font-size="10" fill="#64748b" text-anchor="'+anc+'">'+fmt(vals[i],0)+' %</text>';
+  }
+  return '<svg viewBox="0 0 '+w+' '+w+'" width="100%" style="max-width:'+w+'px;display:block;margin:0 auto">'+g+'</svg>';
+}
+
+function informe(reg){
+  var c=calc(reg.resp),n=nivel(c.pct),e=reg.empresa;
+  var h='<div class="card"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:10px">';
+  h+='<h2>Informe Ejecutivo de Madurez Logística</h2>';
+  h+='<button class="btn" onclick="window.print()">🖨️ Imprimir / Guardar en PDF</button>';
+  h+='</div><table>';
+  h+='<tr><th>Empresa evaluada</th><td><b>'+esc(e.nombre)+'</b></td><th>CIF / NIF</th><td>'+esc(e.cif||'-')+'</td></tr>';
+  h+='<tr><th>Sector económico</th><td>'+esc(e.sector||'-')+'</td><th>Plantilla estimada</th><td>'+esc(e.empleados||'-')+'</td></tr>';
+  h+='<tr><th>Responsable</th><td>'+esc(e.persona||'-')+' ('+esc(e.cargo||'-')+')</td><th>Fecha</th><td>'+esc(e.fecha||'-')+'</td></tr>';
+  h+='</table><h3>1. Nivel de madurez global</h3><div class="kpi">';
+  h+='<div><b>'+fmt(c.tot)+'</b>de '+TOTAL+' puntos</div>';
+  h+='<div><b>'+fmt(c.pct)+' %</b>sobre el máximo</div>';
+  h+='<div><b>'+fmt(c.pd,0)+' %</b>sobre media sectorial</div>';
+  h+='<div><b style="color:'+n[1]+'">'+n[0]+'</b>Nivel alcanzado</div>';
+  h+='</div><h3>2. Resumen por áreas logísticas</h3><table><tr><th>Fase / Dimensión</th><th style="width:65px">Máx.</th><th style="width:65px">Obt.</th><th style="width:60px">% Máx.</th><th style="width:65px">Sector</th><th style="width:100px">Estado</th></tr>';
+  for(var i=0;i<c.bl.length;i++){
+    var blk=c.bl[i];
+    h+='<tr style="background:#f8fafc;font-weight:700"><td>'+blk.id+'. '+esc(blk.nombre)+'</td><td>'+blk.max+'</td><td>'+fmt(blk.obt)+'</td><td>'+fmt(blk.pct)+'%</td><td>'+fmt(blk.md,0)+'%</td><td>'+bar(blk.pct)+'</td></tr>';
+    for(var j=0;j<blk.dims.length;j++){
+      var dim=blk.dims[j];
+      h+='<tr><td style="padding-left:22px">'+dim.id+' '+esc(dim.nombre)+'</td><td>'+dim.max+'</td><td>'+fmt(dim.obt)+'</td><td>'+fmt(dim.pct)+'%</td><td>'+fmt(dim.md,0)+'%</td><td>'+bar(dim.pct)+'</td></tr>';
+    }
+  }
+  h+='<tr style="font-weight:700;background:#f1f5f9"><td>TOTAL GLOBAL</td><td>'+TOTAL+'</td><td>'+fmt(c.tot)+'</td><td>'+fmt(c.pct)+'%</td><td>'+fmt(c.md,0)+'%</td><td>'+bar(c.pct)+'</td></tr>';
+  h+='</table><h3>3. Gráfico radar de madurez por fases</h3>';
+  var vRadar=[], fRadar=[], mRadar=[];
+  for(var i=0;i<c.bl.length;i++){
+    vRadar.push(c.bl[i].pct);
+    fRadar.push(c.bl[i].nombre);
+    mRadar.push(c.bl[i].md);
+  }
+  h+='<div style="max-width:580px;margin:15px auto">'+radar(vRadar,fRadar,mRadar,580)+'</div>';
+  h+='<h3>4. Recomendaciones prioritarias de mejora</h3><ul>';
+  for(var i=0;i<M.length;i++){
+    var blk=M[i];
+    for(var j=0;j<blk.dims.length;j++){
+      var dim=blk.dims[j];
+      for(var k=0;k<dim.preguntas.length;k++){
+        var q=dim.preguntas[k];
+        var v=reg.resp[q.id];
+        if(v!=null&&v<3&&q.mejora){
+          h+='<li><b>['+esc(blk.nombre)+' · '+q.id+']</b>: '+esc(q.mejora)+'</li>';
+        }
+      }
+    }
+  }
+  h+='</ul><p style="font-size:12px;color:var(--m);margin-top:20px">Registro oficial <b>'+reg.id+'</b> · Grabado el '+new Date(reg.grabado).toLocaleString("es-ES")+'.</p></div>';
+  return h;
+}
+
+go("inicio");
+</script></body></html>
